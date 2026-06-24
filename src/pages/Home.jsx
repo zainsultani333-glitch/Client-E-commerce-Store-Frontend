@@ -146,7 +146,7 @@ export default function Home() {
             {[
               { name: "Shirts", img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop" },
               { name: "Trousers", img: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop" },
-              { name: "Traditional Wear", img: "https://images.unsplash.com/photo-1596541576709-6fa65e90eb82?q=80&w=800&auto=format&fit=crop" }
+              { name: "Traditional Wear", img: "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?q=80&w=800&auto=format&fit=crop" }
             ].map((cat) => (
               <Link key={cat.name} to="/products" style={{ position: "relative", height: "320px", borderRadius: "16px", overflow: "hidden", display: "block", textDecoration: "none" }} className="category-card">
                 <img src={cat.img} alt={cat.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }} className="hover-scale" />
