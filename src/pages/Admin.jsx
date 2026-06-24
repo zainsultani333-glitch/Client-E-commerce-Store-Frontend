@@ -3,6 +3,7 @@ import api from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../components/AdminLayout";
+import DashboardCharts from "../components/DashboardCharts";
 
 const CATEGORIES = ["Shirts", "Trousers", "Jackets", "Kurta", "Shalwar Kameez", "Accessories", "Other"];
 const emptyForm = { name: "", description: "", price: "", quantity: "", category: "Shirts", sizes: "", colors: "", images: [], cloudinaryIds: [] };
@@ -315,6 +316,9 @@ function DashboardSection({ products, receipts, onGoTo }) {
           </div>
         ))}
       </div>
+
+      {/* Analytics Charts */}
+      <DashboardCharts products={products} receipts={receipts} />
 
       {/* Recent Orders */}
       {receipts.length > 0 && (

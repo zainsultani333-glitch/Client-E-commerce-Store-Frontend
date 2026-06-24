@@ -51,6 +51,7 @@ export default function Cart() {
         totalAmount: cartTotal,
       });
       clearCart();
+      alert("Your order is placed successfully");
       navigate(`/receipt/${res.data._id}`);
     } catch (err) {
       alert(err.response?.data?.message || "Order failed. Please try again.");
