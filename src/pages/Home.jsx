@@ -135,8 +135,101 @@ export default function Home() {
           </div>
         )}
       </div>
+      {/* ─── CATEGORIES SHOWCASE ─── */}
+      <div style={{ background: "var(--bg-elevated)", padding: "80px 24px" }}>
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: "40px" }}>
+            <h2 style={{ fontSize: "36px", fontWeight: "900", color: "var(--text-primary)", fontFamily: "'Playfair Display', serif", marginBottom: "8px" }}>Shop by Category</h2>
+            <p style={{ color: "var(--text-secondary)" }}>Find exactly what you're looking for</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
+            {[
+              { name: "Shirts", img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop" },
+              { name: "Trousers", img: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop" },
+              { name: "Traditional Wear", img: "https://images.unsplash.com/photo-1596541576709-6fa65e90eb82?q=80&w=800&auto=format&fit=crop" }
+            ].map((cat) => (
+              <Link key={cat.name} to="/products" style={{ position: "relative", height: "320px", borderRadius: "16px", overflow: "hidden", display: "block", textDecoration: "none" }} className="category-card">
+                <img src={cat.img} alt={cat.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }} className="hover-scale" />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)" }} />
+                <h3 style={{ position: "absolute", bottom: "24px", left: "24px", color: "white", margin: 0, fontSize: "24px", fontWeight: "800", fontFamily: "'Playfair Display', serif" }}>{cat.name}</h3>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ─── WHY CHOOSE US ─── */}
+      <div className="container" style={{ padding: "80px 24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "32px", textAlign: "center" }}>
+          {[
+            { icon: "✨", title: "Premium Quality", desc: "Finest fabrics tailored to perfection" },
+            { icon: "🚚", title: "Fast Delivery", desc: "Express shipping nationwide" },
+            { icon: "🛡️", title: "Secure Checkout", desc: "100% protected payments" },
+            { icon: "🎧", title: "24/7 Support", desc: "Dedicated customer service" }
+          ].map((feat) => (
+            <div key={feat.title} style={{ padding: "24px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px", transition: "all 0.3s ease" }} className="hover-lift">
+              <div style={{ fontSize: "40px", marginBottom: "16px" }}>{feat.icon}</div>
+              <h3 style={{ fontSize: "18px", fontWeight: "800", marginBottom: "8px", color: "var(--text-primary)" }}>{feat.title}</h3>
+              <p style={{ fontSize: "14px", color: "var(--text-muted)", lineHeight: 1.5 }}>{feat.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ─── TESTIMONIALS ─── */}
+      <div style={{ background: "var(--bg-elevated)", padding: "80px 24px" }}>
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: "40px" }}>
+            <h2 style={{ fontSize: "36px", fontWeight: "900", color: "var(--text-primary)", fontFamily: "'Playfair Display', serif", marginBottom: "8px" }}>Customer Reviews</h2>
+            <p style={{ color: "var(--text-secondary)" }}>What our clients say about us</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
+            {[
+              { text: "The quality of the shirts is outstanding. I've never felt so comfortable and stylish at the same time.", author: "Ahmed Khan", role: "Verified Buyer" },
+              { text: "Fast delivery and the packaging was premium. Highly recommend their traditional wear collection!", author: "Usman Ali", role: "Verified Buyer" },
+              { text: "Excellent customer service. They helped me find the perfect size for my trousers. Will shop again.", author: "Kamran Shah", role: "Verified Buyer" }
+            ].map((t, idx) => (
+              <div key={idx} style={{ background: "var(--bg-card)", padding: "32px", borderRadius: "16px", border: "1px solid var(--border)", position: "relative" }}>
+                <div style={{ color: "var(--accent)", fontSize: "40px", position: "absolute", top: "16px", right: "24px", opacity: 0.2, fontFamily: "serif" }}>"</div>
+                <div style={{ display: "flex", gap: "4px", marginBottom: "16px", color: "#f59e0b" }}>
+                  ⭐⭐⭐⭐⭐
+                </div>
+                <p style={{ fontSize: "15px", color: "var(--text-primary)", fontStyle: "italic", lineHeight: 1.6, marginBottom: "24px" }}>"{t.text}"</p>
+                <div>
+                  <h4 style={{ fontSize: "15px", fontWeight: "700", margin: "0 0 2px" }}>{t.author}</h4>
+                  <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: 0 }}>{t.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ─── NEWSLETTER ─── */}
+      <div className="container" style={{ padding: "80px 24px" }}>
+        <div style={{ background: "linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%)", border: "1px solid var(--border)", borderRadius: "24px", padding: "48px 24px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: "-50px", left: "-50px", width: "150px", height: "150px", background: "var(--accent)", filter: "blur(100px)", opacity: 0.15 }} />
+          <div style={{ position: "absolute", bottom: "-50px", right: "-50px", width: "150px", height: "150px", background: "var(--primary)", filter: "blur(100px)", opacity: 0.1 }} />
+          
+          <div style={{ position: "relative", zIndex: 1, maxWidth: "600px", margin: "0 auto" }}>
+            <h2 style={{ fontSize: "32px", fontWeight: "900", marginBottom: "16px", fontFamily: "'Playfair Display', serif" }}>Join Our Newsletter</h2>
+            <p style={{ fontSize: "16px", color: "var(--text-secondary)", marginBottom: "32px" }}>Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
+            <form onSubmit={e => e.preventDefault()} style={{ display: "flex", gap: "12px", maxWidth: "450px", margin: "0 auto" }}>
+              <input type="email" placeholder="Enter your email" className="input" style={{ flex: 1, padding: "14px 20px", borderRadius: "12px" }} required />
+              <button type="submit" className="btn-primary" style={{ padding: "14px 28px", borderRadius: "12px" }}>Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
 
       <Footer />
+      
+      <style>
+        {`
+          .category-card:hover .hover-scale { transform: scale(1.05); }
+          .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        `}
+      </style>
     </div>
   );
 }
