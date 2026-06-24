@@ -11,6 +11,7 @@ export default function Cart() {
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
   const [form, setForm] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -51,14 +52,24 @@ export default function Cart() {
         totalAmount: cartTotal,
       });
       clearCart();
-      alert("Your order is placed successfully");
-      navigate(`/receipt/${res.data._id}`);
+      setOrderPlaced(true);
     } catch (err) {
       alert(err.response?.data?.message || "Order failed. Please try again.");
     } finally {
       setChecking(false);
     }
   };
+
+  if (orderPlaced) {
+    return (
+      <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px", padding: "40px 24px", textAlign: "center" }}>
+        <div style={{ fontSize: "100px", lineHeight: 1, marginBottom: "10px" }} className="animate-float">🎉</div>
+        <h2 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "4px" }}>Your order is placed successfully</h2>
+        <p style={{ color: "var(--text-muted)", marginBottom: "16px" }}>Thank you for shopping with us! Your order will be delivered soon.</p>
+        <Link to="/" style={{ padding: "12px 32px", background: "#2F6B4C", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: "700", fontSize: "16px", transition: "var(--transition)" }}>Go Home</Link>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
