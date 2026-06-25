@@ -6,12 +6,9 @@ import { AuthContext } from "../context/AuthContext";
 
 const CATEGORY_COLORS = {
   "Shirts": "#3b82f6",
+  "Hoodies": "#f59e0b",
+  "Shorts": "#22c55e",
   "Trousers": "#a855f7",
-  "Jackets": "#6b7280",
-  "Kurta": "#D4A373",
-  "Shalwar Kameez": "#D4A373",
-  "Accessories": "#22c55e",
-  "Other": "#6b7280",
 };
 
 export default function ProductDetail() {
@@ -29,8 +26,23 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+  
+  const [zoomScale, setZoomScale] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+  };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     setLoading(true);
     api.get(`/products/${id}`)
       .then(res => { setProduct(res.data); setLoading(false); })
@@ -112,13 +124,25 @@ export default function ProductDetail() {
               }}
             >
               {product.images && product.images.length > 0 ? (
-                <img
-                  src={product.images[selectedImage]}
-                  alt={product.name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s ease" }}
-                  onMouseEnter={e => e.target.style.transform = "scale(1.04)"}
-                  onMouseLeave={e => e.target.style.transform = "scale(1)"}
-                />
+                <>
+                  <img
+                    src={product.images[selectedImage]}
+                    alt={product.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s ease" }}
+                    onMouseEnter={e => e.target.style.transform = "scale(1.04)"}
+                    onMouseLeave={e => e.target.style.transform = "scale(1)"}
+                  />
+                  {product.images.length > 1 && (
+                    <>
+                      <button onClick={handlePrevImage} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "50%", width: "40px", height: "40px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-md)", zIndex: 10, color: "var(--text-primary)", transition: "var(--transition)" }} onMouseEnter={e => e.target.style.background = "var(--bg-hover)"} onMouseLeave={e => e.target.style.background = "var(--bg-card)"}>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
+                      </button>
+                      <button onClick={handleNextImage} style={{ position: "absolute", right: "16px", top: "50%", transform: "translateY(-50%)", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "50%", width: "40px", height: "40px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-md)", zIndex: 10, color: "var(--text-primary)", transition: "var(--transition)" }} onMouseEnter={e => e.target.style.background = "var(--bg-hover)"} onMouseLeave={e => e.target.style.background = "var(--bg-card)"}>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
+                      </button>
+                    </>
+                  )}
+                </>
               ) : (
                 <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, var(--bg-elevated), var(--bg-hover))", gap: "16px" }}>
                   <span style={{ fontSize: "80px" }}>👕</span>
@@ -370,14 +394,60 @@ export default function ProductDetail() {
       {/* ─── IMAGE ZOOM MODAL ─── */}
       {imgZoomed && (
         <div
-          onClick={() => setImgZoomed(false)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", cursor: "zoom-out", padding: "24px" }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 2000, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden" }}
+          onMouseUp={() => setIsDragging(false)}
+          onMouseLeave={() => setIsDragging(false)}
+          onMouseMove={(e) => {
+            if (isDragging && zoomScale > 1) {
+              setPan(prev => ({ x: prev.x + e.movementX, y: prev.y + e.movementY }));
+            }
+          }}
         >
-          <img src={product.images[selectedImage]} alt={product.name}
-            style={{ maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain", borderRadius: "12px", boxShadow: "0 30px 80px rgba(0,0,0,0.8)" }}
-          />
-          <button onClick={() => setImgZoomed(false)}
-            style={{ position: "absolute", top: "20px", right: "24px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "50%", width: "44px", height: "44px", color: "#fff", cursor: "pointer", fontSize: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div
+            style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", cursor: zoomScale > 1 ? (isDragging ? "grabbing" : "grab") : "default" }}
+            onWheel={(e) => {
+              if (e.deltaY < 0) setZoomScale(prev => Math.min(prev + 0.2, 4));
+              else {
+                setZoomScale(prev => {
+                  const newScale = Math.max(prev - 0.2, 1);
+                  if (newScale === 1) setPan({ x: 0, y: 0 });
+                  return newScale;
+                });
+              }
+            }}
+            onMouseDown={(e) => {
+              if (zoomScale > 1) {
+                e.preventDefault();
+                setIsDragging(true);
+              }
+            }}
+          >
+            <img src={product.images[selectedImage]} alt={product.name}
+              style={{
+                maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain", borderRadius: "12px",
+                boxShadow: zoomScale > 1 ? "none" : "0 30px 80px rgba(0,0,0,0.8)",
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})`,
+                transition: isDragging ? "none" : "transform 0.2s ease",
+                pointerEvents: "none"
+              }}
+            />
+          </div>
+
+          {/* Zoom controls */}
+          <div style={{ position: "absolute", bottom: "40px", display: "flex", gap: "24px", background: "rgba(255,255,255,0.1)", padding: "12px 24px", borderRadius: "30px", backdropFilter: "blur(10px)", alignItems: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
+            <button onClick={() => { setZoomScale(prev => { const n = Math.max(prev - 0.2, 1); if(n===1) setPan({x:0,y:0}); return n; }); }} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", color: "#fff", cursor: "pointer", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.3)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.2)"}>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 12H4" /></svg>
+            </button>
+            <span style={{ color: "#fff", fontSize: "16px", fontWeight: "600", minWidth: "50px", textAlign: "center", fontFamily: "'Outfit', sans-serif" }}>
+              {Math.round(zoomScale * 100)}%
+            </span>
+            <button onClick={() => setZoomScale(prev => Math.min(prev + 0.2, 4))} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", color: "#fff", cursor: "pointer", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.3)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.2)"}>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
+            </button>
+          </div>
+
+          <button onClick={() => { setImgZoomed(false); setZoomScale(1); setPan({x:0, y:0}); }}
+            style={{ position: "absolute", top: "20px", right: "24px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "50%", width: "44px", height: "44px", color: "#fff", cursor: "pointer", fontSize: "24px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s", zIndex: 10 }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.2)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.1)"}>
             ×
           </button>
         </div>

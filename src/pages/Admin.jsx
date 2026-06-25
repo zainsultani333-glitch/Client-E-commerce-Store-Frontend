@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AdminLayout from "../components/AdminLayout";
 import DashboardCharts from "../components/DashboardCharts";
 
-const CATEGORIES = ["Shirts", "Trousers", "Jackets", "Kurta", "Shalwar Kameez", "Accessories", "Other"];
+const CATEGORIES = ["Shirts", "Hoodies", "Shorts", "Trousers"];
 const emptyForm = { name: "", description: "", price: "", quantity: "", category: "Shirts", sizes: "", colors: "", images: [], cloudinaryIds: [] };
 
 /* ─── TOAST ─── */

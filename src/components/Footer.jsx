@@ -25,7 +25,7 @@ export default function Footer() {
               </div>
             </div>
             <p style={{ color: "var(--text-muted)", fontSize: "13px", lineHeight: 1.8, maxWidth: "280px" }}>
-              Premium quality garments for every occasion. From traditional shalwar kameez to modern shirts and trousers — crafted with care for the Pakistani gentleman.
+              Premium quality garments for every occasion. From hoodies and shorts to modern shirts and trousers — crafted with care for the modern gentleman.
             </p>
           </div>
 
@@ -34,7 +34,7 @@ export default function Footer() {
             <h4 style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "16px" }}>
               Quick Links
             </h4>
-            {["Shop", "New Arrivals", "Shirts", "Trousers", "Kurta"].map(link => (
+            {["Shop", "New Arrivals", "Shirts", "Hoodies", "Shorts", "Trousers"].map(link => (
               <div key={link} style={{ marginBottom: "10px" }}>
                 <a href="/" style={{ color: "var(--text-muted)", fontSize: "13px", textDecoration: "none", transition: "var(--transition)" }}
                   onMouseEnter={e => e.target.style.color = "var(--primary)"}

@@ -5,12 +5,9 @@ import { useNavigate } from "react-router-dom";
 
 const CATEGORY_COLORS = {
   "Shirts": "badge-blue",
+  "Hoodies": "badge-gold",
+  "Shorts": "badge-green",
   "Trousers": "badge-purple",
-  "Jackets": "badge-gray",
-  "Kurta": "badge-gold",
-  "Shalwar Kameez": "badge-gold",
-  "Accessories": "badge-green",
-  "Other": "badge-gray",
 };
 
 export default function ProductCard({ product }) {

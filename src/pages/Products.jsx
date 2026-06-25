@@ -3,7 +3,7 @@ import api from "../api/axios";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 
-const CATEGORIES = ["All", "Shirts", "Trousers", "Jackets", "Kurta", "Shalwar Kameez", "Accessories", "Other"];
+const CATEGORIES = ["All", "Shirts", "Hoodies", "Shorts", "Trousers"];
 
 const SkeletonCard = () => (
   <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden" }}>
