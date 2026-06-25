@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -61,7 +61,7 @@ html {
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: var(--bg-base);
   color: var(--text-primary);
   min-height: 100vh;
@@ -211,7 +211,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: 14px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   transition: var(--transition);
   outline: none;
 }
@@ -536,7 +536,7 @@ label {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .tab-btn.active {
   background: linear-gradient(135deg, var(--primary), var(--primary-light));

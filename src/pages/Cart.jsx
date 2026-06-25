@@ -125,7 +125,7 @@ export default function Cart() {
                   </div>
                   <div style={{ fontSize: "14px", fontWeight: "800", color: "var(--text-primary)" }}>Rs. {(product.price * qty).toLocaleString()}</div>
                   <button onClick={() => removeFromCart(product._id, size, color)}
-                    style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "12px", transition: "var(--transition)", fontFamily: "'Outfit',sans-serif" }}
+                    style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "12px", transition: "var(--transition)", fontFamily: "'Poppins',sans-serif" }}
                     onMouseEnter={e => e.target.style.color = "var(--error)"}
                     onMouseLeave={e => e.target.style.color = "var(--text-muted)"}
                   >✕ Remove</button>

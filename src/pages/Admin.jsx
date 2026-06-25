@@ -325,7 +325,7 @@ function DashboardSection({ products, receipts, onGoTo }) {
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
             <h2 style={{ fontSize: "16px", fontWeight: "700", margin: 0 }}>Recent Orders</h2>
-            <button onClick={() => onGoTo("receipts")} style={{ fontSize: "13px", color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Outfit',sans-serif" }}>View all →</button>
+            <button onClick={() => onGoTo("receipts")} style={{ fontSize: "13px", color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Poppins',sans-serif" }}>View all →</button>
           </div>
           <div className="table-wrapper">
             <table className="table">

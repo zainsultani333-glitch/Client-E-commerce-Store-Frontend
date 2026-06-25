@@ -144,7 +144,7 @@ export default function AdminLayout({ children, activeSection, onSectionChange }
                     : "transparent",
                   color: isActive ? "var(--primary)" : "var(--text-secondary)",
                   borderLeft: isActive ? "3px solid var(--primary)" : "3px solid transparent",
-                  fontFamily: "'Outfit', sans-serif",
+                  fontFamily: "'Poppins', sans-serif",
                   fontSize: "14px",
                   fontWeight: isActive ? "700" : "500",
                   transition: "var(--transition)",

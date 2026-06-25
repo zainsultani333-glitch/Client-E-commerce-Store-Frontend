@@ -266,7 +266,7 @@ export default function ProductDetail() {
                         background: selectedSize === size ? "var(--primary-glow)" : "var(--bg-card)",
                         color: selectedSize === size ? "var(--primary)" : "var(--text-secondary)",
                         fontWeight: selectedSize === size ? "700" : "500",
-                        cursor: "pointer", transition: "var(--transition)", fontFamily: "'Outfit', sans-serif"
+                        cursor: "pointer", transition: "var(--transition)", fontFamily: "'Poppins', sans-serif"
                       }}
                     >
                       {size}
@@ -294,7 +294,7 @@ export default function ProductDetail() {
                         background: selectedColor === color ? "var(--primary-glow)" : "var(--bg-card)",
                         color: selectedColor === color ? "var(--primary)" : "var(--text-secondary)",
                         fontWeight: selectedColor === color ? "700" : "500",
-                        cursor: "pointer", transition: "var(--transition)", fontFamily: "'Outfit', sans-serif"
+                        cursor: "pointer", transition: "var(--transition)", fontFamily: "'Poppins', sans-serif"
                       }}
                     >
                       {color}
@@ -438,7 +438,7 @@ export default function ProductDetail() {
             <button onClick={() => { setZoomScale(prev => { const n = Math.max(prev - 0.2, 1); if(n===1) setPan({x:0,y:0}); return n; }); }} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", color: "#fff", cursor: "pointer", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.3)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.2)"}>
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 12H4" /></svg>
             </button>
-            <span style={{ color: "#fff", fontSize: "16px", fontWeight: "600", minWidth: "50px", textAlign: "center", fontFamily: "'Outfit', sans-serif" }}>
+            <span style={{ color: "#fff", fontSize: "16px", fontWeight: "600", minWidth: "50px", textAlign: "center", fontFamily: "'Poppins', sans-serif" }}>
               {Math.round(zoomScale * 100)}%
             </span>
             <button onClick={() => setZoomScale(prev => Math.min(prev + 0.2, 4))} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", color: "#fff", cursor: "pointer", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.3)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.2)"}>
