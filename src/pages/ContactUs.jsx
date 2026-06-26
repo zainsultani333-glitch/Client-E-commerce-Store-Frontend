@@ -1,6 +1,33 @@
+import { useState } from "react";
 import Footer from "../components/Footer";
+import api from "../api/axios";
 
 export default function ContactUs() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "Order Inquiry",
+    message: "",
+  });
+  const [status, setStatus] = useState({ type: "", text: "" });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus({ type: "", text: "" });
+    try {
+      await api.post("/contact", formData);
+      setStatus({ type: "success", text: "Your message has been sent successfully!" });
+      setFormData({ firstName: "", lastName: "", email: "", subject: "Order Inquiry", message: "" });
+    } catch (err) {
+      setStatus({ type: "error", text: err.response?.data?.message || "Failed to send message. Please try again." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", fontFamily: "'Poppins', sans-serif" }}>
       
@@ -38,26 +65,32 @@ export default function ContactUs() {
             <h3 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "8px" }}>Send us a Message</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "15px", marginBottom: "32px" }}>We typically respond within 24 business hours.</p>
             
-            <form style={{ display: "flex", flexDirection: "column", gap: "20px" }} onSubmit={(e) => e.preventDefault()}>
+            {status.text && (
+              <div style={{ padding: "14px 16px", borderRadius: "10px", marginBottom: "20px", fontSize: "14px", fontWeight: "600", background: status.type === "success" ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)", color: status.type === "success" ? "#22c55e" : "#ef4444", border: `1px solid ${status.type === "success" ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}` }}>
+                {status.text}
+              </div>
+            )}
+            
+            <form style={{ display: "flex", flexDirection: "column", gap: "20px" }} onSubmit={handleSubmit}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>First Name</label>
-                  <input type="text" placeholder="John" style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
+                  <input type="text" placeholder="John" required value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Last Name</label>
-                  <input type="text" placeholder="Doe" style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
+                  <input type="text" placeholder="Doe" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
                 </div>
               </div>
               
               <div>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Email Address</label>
-                <input type="email" placeholder="john@example.com" style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
+                <input type="email" placeholder="john@example.com" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
               </div>
 
               <div>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Subject</label>
-                <select style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif", cursor: "pointer", appearance: "none" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"}>
+                <select value={formData.subject} onChange={e => setFormData({...formData, subject: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif", cursor: "pointer", appearance: "none" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"}>
                   <option>Order Inquiry</option>
                   <option>Returns & Exchanges</option>
                   <option>Product Information</option>
@@ -67,12 +100,12 @@ export default function ContactUs() {
               
               <div>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Message</label>
-                <textarea placeholder="How can we help you?" rows="5" style={{ width: "100%", padding: "16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", resize: "vertical", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"}></textarea>
+                <textarea placeholder="How can we help you?" required rows="5" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} style={{ width: "100%", padding: "16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", resize: "vertical", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"}></textarea>
               </div>
               
-              <button className="btn-primary" style={{ padding: "16px", fontSize: "15px", fontWeight: "700", borderRadius: "10px", marginTop: "8px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
-                Send Message
-                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              <button type="submit" disabled={loading} className="btn-primary" style={{ padding: "16px", fontSize: "15px", fontWeight: "700", borderRadius: "10px", marginTop: "8px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", opacity: loading ? 0.7 : 1 }}>
+                {loading ? "Sending..." : "Send Message"}
+                {!loading && <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>}
               </button>
             </form>
           </div>
