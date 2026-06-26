@@ -586,8 +586,45 @@ function UsersSection({ users, onDelete }) {
   );
 }
 
+/* ─── MESSAGE MODAL ─── */
+function MessageModal({ message, onClose, onMarkRead }) {
+  if (!message) return null;
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal" style={{ maxWidth: "600px" }}>
+        <div className="modal-header" style={{ alignItems: "flex-start" }}>
+          <div>
+            <h2 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "4px" }}>{message.subject}</h2>
+            <div style={{ color: "var(--text-secondary)", fontSize: "13px" }}>
+              From: <span style={{ fontWeight: "600", color: "var(--text-primary)" }}>{message.firstName} {message.lastName}</span> &lt;{message.email}&gt;
+            </div>
+            <div style={{ color: "var(--text-muted)", fontSize: "12px", marginTop: "4px" }}>
+              {new Date(message.createdAt).toLocaleString("en-PK", { dateStyle: "long", timeStyle: "short" })}
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "24px", lineHeight: 1 }}>×</button>
+        </div>
+        <div className="modal-body" style={{ background: "var(--bg-base)", padding: "24px", minHeight: "150px" }}>
+          <p style={{ color: "var(--text-primary)", fontSize: "15px", lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap" }}>
+            {message.message}
+          </p>
+        </div>
+        <div className="modal-footer" style={{ justifyContent: "space-between" }}>
+          <div>
+            {message.status === "unread" && (
+              <button className="btn-success" style={{ padding: "10px 20px" }} onClick={() => { onMarkRead(message._id); onClose(); }}>✓ Mark as Read</button>
+            )}
+          </div>
+          <button className="btn-ghost" onClick={onClose}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── MESSAGES SECTION ─── */
-function MessagesSection({ messages, onMarkRead, onDelete }) {
+function MessagesSection({ messages, onViewMessage, onDelete }) {
   return (
     <div style={{ padding: "32px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
@@ -642,9 +679,7 @@ function MessagesSection({ messages, onMarkRead, onDelete }) {
                   </td>
                   <td>
                     <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-                      {m.status === "unread" && (
-                        <button className="btn-ghost" style={{ padding: "7px 14px" }} onClick={() => onMarkRead(m._id)}>✓ Read</button>
-                      )}
+                      <button className="btn-ghost" style={{ padding: "7px 14px", color: "var(--primary)" }} onClick={() => onViewMessage(m)}>👁️ View</button>
                       <button className="btn-danger" style={{ padding: "7px 14px" }} onClick={() => onDelete(m._id)}>🗑️</button>
                     </div>
                   </td>
@@ -669,6 +704,7 @@ export default function Admin() {
   const [showProductModal, setShowProductModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [viewMessage, setViewMessage] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [toast, setToast] = useState(null);
 
@@ -774,7 +810,7 @@ export default function Admin() {
         <UsersSection users={users} onDelete={handleDeleteUser} />
       )}
       {section === "messages" && (
-        <MessagesSection messages={messages} onMarkRead={handleMarkMessageRead} onDelete={handleDeleteMessage} />
+        <MessagesSection messages={messages} onViewMessage={setViewMessage} onDelete={handleDeleteMessage} />
       )}
 
       {/* Modals */}
@@ -783,6 +819,9 @@ export default function Admin() {
       )}
       {showReceiptModal && (
         <ReceiptModal products={products} onClose={() => setShowReceiptModal(false)} />
+      )}
+      {viewMessage && (
+        <MessageModal message={viewMessage} onClose={() => setViewMessage(null)} onMarkRead={handleMarkMessageRead} />
       )}
       {deleteId && (
         <div className="modal-overlay">
