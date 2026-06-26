@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 import { CartContext } from "../context/CartContext";
@@ -26,10 +26,27 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
-  
+
   const [zoomScale, setZoomScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const imgContainerRef = useRef(null);
+
+  // Attach non-passive wheel listener to prevent page scroll during zoom
+  useEffect(() => {
+    const el = imgContainerRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      e.preventDefault();
+      setZoomScale(prev => {
+        const next = e.deltaY < 0 ? Math.min(prev + 0.25, 4) : Math.max(prev - 0.25, 1);
+        if (next === 1) setPan({ x: 0, y: 0 });
+        return next;
+      });
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
 
   const handlePrevImage = (e) => {
     e.stopPropagation();
@@ -112,15 +129,42 @@ export default function ProductDetail() {
           {/* ─── LEFT: IMAGE GALLERY ─── */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div
-              onClick={() => product.images && product.images.length > 0 && setImgZoomed(true)}
+              ref={imgContainerRef}
               style={{
-                background: "var(--bg-card)",
+                background: "var(--bg-elevated)",
                 border: "1px solid var(--border)",
                 borderRadius: "20px",
                 overflow: "hidden",
-                aspectRatio: "1/1",
-                cursor: product.images && product.images.length > 0 ? "zoom-in" : "default",
+                height: "70vh",
+                minHeight: "420px",
+                maxHeight: "700px",
+                cursor: product.images?.length > 0
+                  ? (zoomScale > 1 ? (isDragging ? "grabbing" : "grab") : "zoom-in")
+                  : "default",
                 position: "relative",
+                userSelect: "none",
+              }}
+              onDoubleClick={() => {
+                if (!product.images?.length) return;
+                if (zoomScale > 1) {
+                  setZoomScale(1);
+                  setPan({ x: 0, y: 0 });
+                } else {
+                  setZoomScale(2.5);
+                }
+              }}
+              onMouseDown={(e) => {
+                if (zoomScale > 1 && product.images?.length > 0) {
+                  e.preventDefault();
+                  setIsDragging(true);
+                }
+              }}
+              onMouseUp={() => setIsDragging(false)}
+              onMouseLeave={() => setIsDragging(false)}
+              onMouseMove={(e) => {
+                if (isDragging && zoomScale > 1) {
+                  setPan(prev => ({ x: prev.x + e.movementX, y: prev.y + e.movementY }));
+                }
               }}
             >
               {product.images && product.images.length > 0 ? (
@@ -128,19 +172,47 @@ export default function ProductDetail() {
                   <img
                     src={product.images[selectedImage]}
                     alt={product.name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s ease" }}
-                    onMouseEnter={e => e.target.style.transform = "scale(1.04)"}
-                    onMouseLeave={e => e.target.style.transform = "scale(1)"}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      display: "block",
+                      transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})`,
+                      transition: isDragging ? "none" : "transform 0.25s ease",
+                      pointerEvents: "none",
+                    }}
                   />
                   {product.images.length > 1 && (
                     <>
-                      <button onClick={handlePrevImage} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "50%", width: "40px", height: "40px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-md)", zIndex: 10, color: "var(--text-primary)", transition: "var(--transition)" }} onMouseEnter={e => e.target.style.background = "var(--bg-hover)"} onMouseLeave={e => e.target.style.background = "var(--bg-card)"}>
-                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setZoomScale(1); setPan({ x: 0, y: 0 }); handlePrevImage(e); }}
+                        style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.9)", border: "1px solid var(--border)", borderRadius: "50%", width: "40px", height: "40px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-md)", zIndex: 10, color: "var(--text-primary)", transition: "var(--transition)" }}
+                        onMouseEnter={e => e.currentTarget.style.background = "#fff"}
+                        onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.9)"}
+                      >
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
                       </button>
-                      <button onClick={handleNextImage} style={{ position: "absolute", right: "16px", top: "50%", transform: "translateY(-50%)", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "50%", width: "40px", height: "40px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-md)", zIndex: 10, color: "var(--text-primary)", transition: "var(--transition)" }} onMouseEnter={e => e.target.style.background = "var(--bg-hover)"} onMouseLeave={e => e.target.style.background = "var(--bg-card)"}>
-                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setZoomScale(1); setPan({ x: 0, y: 0 }); handleNextImage(e); }}
+                        style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.9)", border: "1px solid var(--border)", borderRadius: "50%", width: "40px", height: "40px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-md)", zIndex: 10, color: "var(--text-primary)", transition: "var(--transition)" }}
+                        onMouseEnter={e => e.currentTarget.style.background = "#fff"}
+                        onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.9)"}
+                      >
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
                       </button>
                     </>
+                  )}
+                  {/* Hint overlay */}
+                  {zoomScale === 1 && (
+                    <div style={{ position: "absolute", bottom: "12px", left: "50%", transform: "translateX(-50%)", background: "rgba(0,0,0,0.55)", borderRadius: "20px", padding: "5px 14px", fontSize: "11px", color: "#fff", whiteSpace: "nowrap", pointerEvents: "none", backdropFilter: "blur(4px)" }}>
+                      Double-click to zoom · Scroll to zoom
+                    </div>
+                  )}
+                  {/* Zoom level pill */}
+                  {zoomScale > 1 && (
+                    <div style={{ position: "absolute", bottom: "12px", left: "50%", transform: "translateX(-50%)", background: "rgba(0,0,0,0.65)", borderRadius: "20px", padding: "5px 14px", fontSize: "12px", fontWeight: "700", color: "#fff", whiteSpace: "nowrap", pointerEvents: "none", backdropFilter: "blur(4px)" }}>
+                      {Math.round(zoomScale * 100)}% · Double-click to reset
+                    </div>
                   )}
                 </>
               ) : (
@@ -150,42 +222,34 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {/* Stock badge on image */}
+              {/* Stock badges */}
               {!isOutOfStock && product.quantity <= 10 && (
-                <div style={{ position: "absolute", top: "14px", right: "14px" }}>
+                <div style={{ position: "absolute", top: "12px", right: "12px", zIndex: 10 }}>
                   <span className="badge badge-gold">⚠ Only {product.quantity} left</span>
                 </div>
               )}
               {isOutOfStock && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 5 }}>
                   <span className="badge badge-red" style={{ fontSize: "16px", padding: "10px 20px" }}>Out of Stock</span>
-                </div>
-              )}
-              {product.images && product.images.length > 0 && !isOutOfStock && (
-                <div style={{ position: "absolute", bottom: "14px", right: "14px", background: "rgba(0,0,0,0.6)", borderRadius: "8px", padding: "6px 10px", fontSize: "11px", color: "#fff", display: "flex", alignItems: "center", gap: "5px" }}>
-                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                  </svg>
-                  Click to zoom
                 </div>
               )}
             </div>
 
             {/* Thumbnails */}
             {product.images && product.images.length > 1 && (
-              <div style={{ display: "flex", gap: "12px", overflowX: "auto", paddingBottom: "4px" }}>
+              <div style={{ display: "flex", gap: "10px", overflowX: "auto", paddingBottom: "4px" }}>
                 {product.images.map((img, idx) => (
                   <img
                     key={idx}
                     src={img}
                     alt={`${product.name} ${idx + 1}`}
-                    onClick={() => setSelectedImage(idx)}
+                    onClick={() => { setSelectedImage(idx); setZoomScale(1); setPan({ x: 0, y: 0 }); }}
                     style={{
-                      width: "80px", height: "80px", objectFit: "cover", borderRadius: "12px",
+                      width: "72px", height: "72px", objectFit: "cover", borderRadius: "10px",
                       border: `2px solid ${selectedImage === idx ? "var(--primary)" : "transparent"}`,
-                      cursor: "pointer", transition: "var(--transition)",
+                      cursor: "pointer", transition: "var(--transition)", flexShrink: 0,
                       boxShadow: selectedImage === idx ? "var(--shadow-sm)" : "none",
-                      opacity: selectedImage === idx ? 1 : 0.6
+                      opacity: selectedImage === idx ? 1 : 0.55,
                     }}
                   />
                 ))}
@@ -346,8 +410,8 @@ export default function ProductDetail() {
                   background: isOutOfStock
                     ? "var(--bg-elevated)"
                     : added
-                    ? "linear-gradient(135deg, var(--success), #16a34a)"
-                    : undefined,
+                      ? "linear-gradient(135deg, var(--success), #16a34a)"
+                      : undefined,
                   color: isOutOfStock ? "var(--text-muted)" : undefined,
                   cursor: isOutOfStock ? "not-allowed" : "pointer",
                   justifyContent: "center",
@@ -368,25 +432,7 @@ export default function ProductDetail() {
               </button>
             </div>
 
-            {/* Product Meta */}
-            <div style={{ padding: "16px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "12px" }}>
-              <div style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "12px" }}>
-                Product Details
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                {[
-                  { label: "Category", value: product.category || "—" },
-                  { label: "Stock", value: isOutOfStock ? "Out of Stock" : `${product.quantity} pieces available` },
-                  { label: "Payment", value: "Cash on Delivery" },
-                  { label: "Added", value: new Date(product.createdAt).toLocaleDateString("en-PK", { day: "numeric", month: "long", year: "numeric" }) },
-                ].map(row => (
-                  <div key={row.label} style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", paddingBottom: "8px", borderBottom: "1px solid var(--border)" }}>
-                    <span style={{ color: "var(--text-muted)" }}>{row.label}</span>
-                    <span style={{ color: "var(--text-primary)", fontWeight: "600" }}>{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -435,7 +481,7 @@ export default function ProductDetail() {
 
           {/* Zoom controls */}
           <div style={{ position: "absolute", bottom: "40px", display: "flex", gap: "24px", background: "rgba(255,255,255,0.1)", padding: "12px 24px", borderRadius: "30px", backdropFilter: "blur(10px)", alignItems: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
-            <button onClick={() => { setZoomScale(prev => { const n = Math.max(prev - 0.2, 1); if(n===1) setPan({x:0,y:0}); return n; }); }} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", color: "#fff", cursor: "pointer", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.3)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.2)"}>
+            <button onClick={() => { setZoomScale(prev => { const n = Math.max(prev - 0.2, 1); if (n === 1) setPan({ x: 0, y: 0 }); return n; }); }} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", color: "#fff", cursor: "pointer", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.3)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.2)"}>
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 12H4" /></svg>
             </button>
             <span style={{ color: "#fff", fontSize: "16px", fontWeight: "600", minWidth: "50px", textAlign: "center", fontFamily: "'Poppins', sans-serif" }}>
@@ -446,7 +492,7 @@ export default function ProductDetail() {
             </button>
           </div>
 
-          <button onClick={() => { setImgZoomed(false); setZoomScale(1); setPan({x:0, y:0}); }}
+          <button onClick={() => { setImgZoomed(false); setZoomScale(1); setPan({ x: 0, y: 0 }); }}
             style={{ position: "absolute", top: "20px", right: "24px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "50%", width: "44px", height: "44px", color: "#fff", cursor: "pointer", fontSize: "24px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s", zIndex: 10 }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.2)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.1)"}>
             ×
           </button>

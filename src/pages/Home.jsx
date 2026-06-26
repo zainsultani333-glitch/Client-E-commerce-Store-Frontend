@@ -104,23 +104,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div style={{ position: "absolute", bottom: "40px", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", opacity: 0.7, animation: "bounce 2s infinite" }}>
-          <span style={{ color: "#fff", fontSize: "11px", textTransform: "uppercase", letterSpacing: "2px" }}>Scroll</span>
-          <div style={{ width: "1px", height: "40px", background: "linear-gradient(to bottom, rgba(255,255,255,0.8), transparent)" }} />
-        </div>
+
       </div>
 
-      {/* ─── LOGO STRIP (SOCIAL PROOF) ─── */}
-      <div style={{ borderBottom: "1px solid var(--border)", background: "var(--bg-card)", padding: "30px 0" }}>
-        <div className="container" style={{ display: "flex", justifyContent: "center", gap: "clamp(24px, 5vw, 80px)", flexWrap: "wrap", opacity: 0.5 }}>
-          {["VOGUE", "GQ", "ESQUIRE", "VANITY FAIR", "HYPEBEAST"].map(brand => (
-            <div key={brand} style={{ fontSize: "24px", fontWeight: "900", fontFamily: "'Playfair Display', serif", letterSpacing: "2px" }}>
-              {brand}
-            </div>
-          ))}
-        </div>
-      </div>
+
 
       {/* ─── FEATURED PRODUCTS ─── */}
       <div className="container" style={{ padding: "100px 24px" }}>
