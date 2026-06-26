@@ -297,7 +297,7 @@ function DashboardSection({ products, receipts, onGoTo }) {
       </div>
 
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "32px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "16px", marginBottom: "32px" }}>
         {[
           { icon: "📦", label: "Total Products", value: products.length, sub: "Items in store", click: () => onGoTo("products") },
           { icon: "💰", label: "Inventory Value", value: `Rs. ${totalValue.toLocaleString()}`, sub: "Total stock value" },
@@ -305,14 +305,14 @@ function DashboardSection({ products, receipts, onGoTo }) {
           { icon: "📈", label: "Total Revenue", value: `Rs. ${totalRevenue.toLocaleString()}`, sub: "From all orders" },
           { icon: "⚠️", label: "Low Stock", value: lowStock.length, sub: "Need restocking", alert: lowStock.length > 0 },
         ].map((s) => (
-          <div key={s.label} className="stat-card" onClick={s.click} style={{ cursor: s.click ? "pointer" : "default", borderColor: s.alert && s.value > 0 ? "rgba(245,158,11,0.3)" : undefined }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
-              <div className="stat-icon">{s.icon}</div>
+          <div key={s.label} className="stat-card hover-lift" onClick={s.click} style={{ cursor: s.click ? "pointer" : "default", background: "var(--bg-card)", padding: "20px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)", borderColor: s.alert && s.value > 0 ? "rgba(245,158,11,0.5)" : undefined, minWidth: 0 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+              <div className="stat-icon" style={{ background: "rgba(255,255,255,0.05)", width: "40px", height: "40px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>{s.icon}</div>
               {s.alert && s.value > 0 && <span className="badge badge-gold">Alert</span>}
             </div>
-            <div className="stat-value" style={{ color: s.alert && s.value > 0 ? "#f59e0b" : undefined }}>{s.value}</div>
-            <div className="stat-label">{s.label}</div>
-            <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" }}>{s.sub}</div>
+            <div className="stat-value" style={{ color: s.alert && s.value > 0 ? "#f59e0b" : "var(--text-primary)", fontSize: "20px", fontWeight: "800", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.value}</div>
+            <div className="stat-label" style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-secondary)", marginTop: "4px" }}>{s.label}</div>
+            <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.sub}</div>
           </div>
         ))}
       </div>
@@ -781,7 +781,7 @@ export default function Admin() {
 
   if (loading) {
     return (
-      <AdminLayout activeSection="dashboard" onSectionChange={() => {}}>
+      <AdminLayout activeSection="dashboard" onSectionChange={() => { }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", flexDirection: "column", gap: "16px" }}>
           <div className="spinner" style={{ width: "48px", height: "48px" }} />
           <p style={{ color: "var(--text-muted)" }}>Loading dashboard...</p>
