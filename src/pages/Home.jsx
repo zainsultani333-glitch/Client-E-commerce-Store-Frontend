@@ -66,19 +66,19 @@ export default function Home() {
               </div>
 
               {/* Heading */}
-              <h1 style={{ fontSize: "clamp(40px, 5.5vw, 76px)", fontWeight: "900", lineHeight: 1.05, marginBottom: "28px", color: "#fff" }}>
+              <h1 style={{ fontSize: "clamp(44px, 6vw, 84px)", fontWeight: "900", lineHeight: 1.05, marginBottom: "24px", color: "#fff", letterSpacing: "-1px" }}>
                 Dress Like<br />
-                <span style={{ position: "relative", display: "inline-block" }}>
-                  <span style={{ color: "var(--primary)" }}>You Mean</span>
+                <span style={{ background: "linear-gradient(to right, #c9a84c, #e8c96e, #fff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                  You Mean
                 </span><br />
-                <span style={{ color: "rgba(255,255,255,0.85)", fontWeight: "300", fontStyle: "italic" }}>Business.</span>
+                <span style={{ color: "rgba(255,255,255,0.9)", fontWeight: "300", fontStyle: "italic", fontSize: "0.85em" }}>Business.</span>
               </h1>
 
               {/* Divider */}
-              <div style={{ width: "60px", height: "3px", background: "linear-gradient(90deg, var(--primary), transparent)", borderRadius: "2px", marginBottom: "28px" }} />
+              <div style={{ width: "60px", height: "4px", background: "linear-gradient(90deg, #c9a84c, transparent)", borderRadius: "2px", marginBottom: "24px" }} />
 
               {/* Subtext */}
-              <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.6)", maxWidth: "440px", lineHeight: 1.8, marginBottom: "44px", fontWeight: "300" }}>
+              <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.7)", maxWidth: "440px", lineHeight: 1.6, marginBottom: "40px", fontWeight: "300" }}>
                 Precision-crafted shirts, hoodies, shorts &amp; trousers for the modern Pakistani gentleman. Every stitch tells a story.
               </p>
 
@@ -147,20 +147,20 @@ export default function Home() {
 
 
       {/* ─── TOP PICKS SECTION ─── */}
-      <div style={{ background: "var(--bg-base)", padding: "100px 0" }}>
+      <div style={{ background: "var(--bg-base)", padding: "70px 0" }}>
         <div className="container" style={{ padding: "0 24px" }}>
 
           {/* Section header */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "60px", flexWrap: "wrap", gap: "24px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px", flexWrap: "wrap", gap: "24px" }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
                 <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-                <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Top Picks</span>
+                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Top Picks</span>
               </div>
-              <h2 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05, margin: 0 }}>
-                Trending <span style={{ color: "var(--primary)" }}>Now</span>
+              <h2 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05, margin: 0, letterSpacing: "-0.5px" }}>
+                Trending <span style={{ background: "linear-gradient(to right, #c9a84c, #e8c96e)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Now</span>
               </h2>
-              <p style={{ fontSize: "15px", color: "var(--text-muted)", marginTop: "12px", fontWeight: "400", maxWidth: "400px" }}>
+              <p style={{ fontSize: "15px", color: "var(--text-muted)", marginTop: "10px", fontWeight: "400", maxWidth: "400px" }}>
                 Hand-picked favourites from our latest collection.
               </p>
             </div>
@@ -208,18 +208,18 @@ export default function Home() {
 
 
       {/* ─── COLLECTIONS ─── */}
-      <div style={{ background: "var(--bg-base)", padding: "100px 0" }}>
+      <div style={{ background: "var(--bg-base)", padding: "70px 0" }}>
         <div className="container" style={{ padding: "0 24px" }}>
 
           {/* Section header */}
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "56px", flexWrap: "wrap", gap: "24px" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "40px", flexWrap: "wrap", gap: "24px" }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
                 <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-                <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Collections</span>
+                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Collections</span>
               </div>
-              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05, margin: 0 }}>
-                Shop by <span style={{ color: "var(--primary)" }}>Category</span>
+              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05, margin: 0, letterSpacing: "-0.5px" }}>
+                Shop by <span style={{ background: "linear-gradient(to right, #c9a84c, #e8c96e)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Category</span>
               </h2>
             </div>
             <Link to="/products"
@@ -298,8 +298,8 @@ export default function Home() {
 
 
       {/* ─── BRAND PROMISE / WHY CHOOSE US ─── */}
-      <div className="container" style={{ padding: "100px 24px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "40px" }}>
+      <div className="container" style={{ padding: "70px 24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "32px" }}>
           {[
             { icon: <Icons.Quality />, title: "Premium Quality", desc: "Expertly crafted using the finest fabrics for unparalleled comfort and longevity." },
             { icon: <Icons.Delivery />, title: "Express Delivery", desc: "Fast, reliable shipping directly to your doorstep, anywhere in the country." },
@@ -319,20 +319,20 @@ export default function Home() {
       </div>
 
       {/* ─── TESTIMONIALS ─── */}
-      <div style={{ background: "var(--bg-elevated)", padding: "100px 0", position: "relative", overflow: "hidden" }}>
+      <div style={{ background: "var(--bg-elevated)", padding: "80px 0", position: "relative", overflow: "hidden" }}>
         {/* Top accent line */}
         <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "1px", background: "linear-gradient(90deg, transparent, var(--primary), transparent)" }} />
 
         <div className="container" style={{ padding: "0 24px" }}>
           {/* Section header */}
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "60px", flexWrap: "wrap", gap: "24px" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "40px", flexWrap: "wrap", gap: "24px" }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
                 <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-                <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Customer Reviews</span>
+                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Customer Reviews</span>
               </div>
-              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05, margin: 0 }}>
-                What Our <span style={{ color: "var(--primary)" }}>Customers</span> Say
+              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05, margin: 0, letterSpacing: "-0.5px" }}>
+                What Our <span style={{ background: "linear-gradient(to right, #c9a84c, #e8c96e)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Customers</span> Say
               </h2>
             </div>
             {/* Aggregate rating pill */}
@@ -411,7 +411,7 @@ export default function Home() {
 
 
       {/* ─── VIP NEWSLETTER ─── */}
-      <div className="container" style={{ padding: "100px 24px" }}>
+      <div className="container" style={{ padding: "70px 24px 80px" }}>
         <div style={{
           background: "linear-gradient(135deg, #111 0%, #222 100%)",
           borderRadius: "32px",
