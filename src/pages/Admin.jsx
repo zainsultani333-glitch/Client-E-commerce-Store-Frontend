@@ -586,11 +586,84 @@ function UsersSection({ users, onDelete }) {
   );
 }
 
+/* ─── MESSAGES SECTION ─── */
+function MessagesSection({ messages, onMarkRead, onDelete }) {
+  return (
+    <div style={{ padding: "32px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+        <div>
+          <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Messages</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{messages.length} customer inquiries</p>
+        </div>
+      </div>
+      <div className="table-wrapper">
+        {messages.length === 0 ? (
+          <div style={{ padding: "60px", textAlign: "center" }}>
+            <div style={{ fontSize: "48px", marginBottom: "12px" }}>✉️</div>
+            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No messages</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>You're all caught up!</p>
+          </div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th style={{ width: "40px" }}>#</th>
+                <th>Sender</th>
+                <th>Subject</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th style={{ textAlign: "right" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {messages.map((m, idx) => (
+                <tr key={m._id} style={{ background: m.status === "unread" ? "rgba(201,168,76,0.05)" : "transparent" }}>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{idx + 1}</td>
+                  <td>
+                    <div style={{ fontWeight: m.status === "unread" ? "800" : "600" }}>{m.firstName} {m.lastName}</div>
+                    <div style={{ color: "var(--text-secondary)", fontSize: "12px" }}>{m.email}</div>
+                  </td>
+                  <td style={{ fontWeight: m.status === "unread" ? "700" : "500", color: m.status === "unread" ? "var(--text-primary)" : "var(--text-secondary)" }}>
+                    {m.subject}
+                  </td>
+                  <td style={{ color: "var(--text-secondary)", fontSize: "13px", maxWidth: "250px" }}>
+                    <div style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {m.message}
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`badge ${m.status === "unread" ? "badge-gold" : "badge-green"}`}>
+                      {m.status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>
+                    {new Date(m.createdAt).toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" })}
+                  </td>
+                  <td>
+                    <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                      {m.status === "unread" && (
+                        <button className="btn-ghost" style={{ padding: "7px 14px" }} onClick={() => onMarkRead(m._id)}>✓ Read</button>
+                      )}
+                      <button className="btn-danger" style={{ padding: "7px 14px" }} onClick={() => onDelete(m._id)}>🗑️</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ─── MAIN ADMIN PAGE ─── */
 export default function Admin() {
   const [products, setProducts] = useState([]);
   const [receipts, setReceipts] = useState([]);
   const [users, setUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [section, setSection] = useState("dashboard");
   const [showProductModal, setShowProductModal] = useState(false);
@@ -601,10 +674,16 @@ export default function Admin() {
 
   const fetchAll = async () => {
     try {
-      const [pRes, rRes, uRes] = await Promise.all([api.get("/products"), api.get("/receipts"), api.get("/users")]);
+      const [pRes, rRes, uRes, mRes] = await Promise.all([
+        api.get("/products"),
+        api.get("/receipts"),
+        api.get("/users"),
+        api.get("/contact").catch(() => ({ data: [] })) // Default to empty if contact endpoint is missing
+      ]);
       setProducts(pRes.data);
       setReceipts(rRes.data);
       setUsers(uRes.data);
+      setMessages(mRes.data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   };
@@ -643,6 +722,27 @@ export default function Admin() {
     }
   };
 
+  const handleMarkMessageRead = async (id) => {
+    try {
+      await api.put(`/contact/${id}/read`);
+      setMessages(prev => prev.map(m => m._id === id ? { ...m, status: "read" } : m));
+      showToast("Message marked as read");
+    } catch (err) {
+      showToast("Failed to update message", "error");
+    }
+  };
+
+  const handleDeleteMessage = async (id) => {
+    if (!window.confirm("Delete this message?")) return;
+    try {
+      await api.delete(`/contact/${id}`);
+      setMessages(prev => prev.filter(m => m._id !== id));
+      showToast("Message deleted!");
+    } catch (err) {
+      showToast("Failed to delete message", "error");
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout activeSection="dashboard" onSectionChange={() => {}}>
@@ -672,6 +772,9 @@ export default function Admin() {
       )}
       {section === "users" && (
         <UsersSection users={users} onDelete={handleDeleteUser} />
+      )}
+      {section === "messages" && (
+        <MessagesSection messages={messages} onMarkRead={handleMarkMessageRead} onDelete={handleDeleteMessage} />
       )}
 
       {/* Modals */}
