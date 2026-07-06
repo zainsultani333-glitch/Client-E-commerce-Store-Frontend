@@ -19,7 +19,8 @@ export default function Register() {
     setError("");
     try {
       await api.post("/auth/register", { name, email, password });
-      navigate("/login?registered=1");
+      sessionStorage.removeItem("cart"); // Ensure a clean slate for the new user
+      window.location.href = "/login?registered=1";
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {

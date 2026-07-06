@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AdminLayout from "../components/AdminLayout";
 import DashboardCharts from "../components/DashboardCharts";
 
-const CATEGORIES = ["Shirts", "Hoodies", "Shorts", "Trousers"];
-const emptyForm = { name: "", description: "", price: "", quantity: "", category: "Shirts", sizes: "", colors: "", images: [], cloudinaryIds: [] };
+
 
 /* ─── TOAST ─── */
 function Toast({ msg, type, onClose }) {
@@ -74,7 +73,9 @@ function MultiImageUpload({ images, cloudinaryIds, onChange }) {
 }
 
 /* ─── PRODUCT MODAL ─── */
-function ProductModal({ product, onClose, onSave }) {
+function ProductModal({ product, categories, onClose, onSave }) {
+  const defaultCategory = categories && categories.length > 0 ? categories[0].name : "";
+  const emptyForm = { name: "", description: "", price: "", quantity: "", category: defaultCategory, sizes: "", colors: "", images: [], cloudinaryIds: [] };
   const [form, setForm] = useState(product ? { ...product, price: String(product.price), quantity: String(product.quantity), sizes: product.sizes?.join(", ") || "", colors: product.colors?.join(", ") || "", images: product.images || [], cloudinaryIds: product.cloudinaryIds || [] } : emptyForm);
   const [saving, setSaving] = useState(false);
   const isEdit = !!product?._id;
@@ -145,7 +146,7 @@ function ProductModal({ product, onClose, onSave }) {
             <div>
               <label>Category</label>
               <select className="input" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {categories.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
               </select>
             </div>
             <div>
@@ -360,7 +361,7 @@ function DashboardSection({ products, receipts, onGoTo }) {
 }
 
 /* ─── PRODUCTS SECTION ─── */
-function ProductsSection({ products, onAdd, onEdit, onDelete }) {
+function ProductsSection({ products, categories, onAdd, onEdit, onDelete }) {
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("All");
 
@@ -390,7 +391,7 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }) {
         </div>
         <select className="input" style={{ width: "auto" }} value={filterCat} onChange={e => setFilterCat(e.target.value)}>
           <option value="All">All Categories</option>
-          {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          {categories.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
         </select>
       </div>
 
@@ -456,25 +457,22 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }) {
   );
 }
 
-/* ─── RECEIPTS SECTION ─── */
-function ReceiptsSection({ receipts, onNewReceipt }) {
-  const navigate = useNavigate();
+/* ─── ORDERS SECTION ─── */
+function OrdersSection({ orders, onConfirm }) {
   return (
     <div style={{ padding: "32px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
         <div>
-          <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Receipts</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{receipts.length} orders processed</p>
+          <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Orders</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{orders.length} new unconfirmed orders</p>
         </div>
-        <button className="btn-primary" onClick={onNewReceipt}>🧾 New Receipt</button>
       </div>
       <div className="table-wrapper">
-        {receipts.length === 0 ? (
+        {orders.length === 0 ? (
           <div style={{ padding: "60px", textAlign: "center" }}>
-            <div style={{ fontSize: "48px", marginBottom: "12px" }}>🧾</div>
-            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No receipts yet</h3>
-            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>Create your first receipt</p>
-            <button className="btn-primary" onClick={onNewReceipt}>🧾 Create Receipt</button>
+            <div style={{ fontSize: "48px", marginBottom: "12px" }}>📦</div>
+            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No new orders</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>When customers place orders, they will appear here to be confirmed.</p>
           </div>
         ) : (
           <table className="table">
@@ -486,8 +484,72 @@ function ReceiptsSection({ receipts, onNewReceipt }) {
                 <th>Address</th>
                 <th>Items</th>
                 <th>Total</th>
-                <th>Payment</th>
                 <th>Date</th>
+                <th style={{ textAlign: "right" }}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((o, idx) => (
+                <tr key={o._id}>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{idx + 1}</td>
+                  <td>
+                    <div style={{ fontWeight: "600" }}>{o.customerName}</div>
+                    {o.customerEmail && <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{o.customerEmail}</div>}
+                  </td>
+                  <td style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{o.phone || "—"}</td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "12px", maxWidth: "140px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.address || "—"}</td>
+                  <td style={{ color: "var(--text-secondary)" }}>{o.products.length} items</td>
+                  <td style={{ fontWeight: "700", color: "var(--primary)" }}>Rs. {o.totalAmount.toLocaleString()}</td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>
+                    {new Date(o.createdAt).toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                  </td>
+                  <td>
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                      <button className="btn-primary" style={{ fontSize: "13px", padding: "7px 14px" }} onClick={() => onConfirm(o._id)}>
+                        ✅ Confirm Order
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── RECEIPTS SECTION ─── */
+function ReceiptsSection({ receipts, onNewReceipt, onStatusChange }) {
+  const navigate = useNavigate();
+  return (
+    <div style={{ padding: "32px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+        <div>
+          <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Receipts & Processing</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{receipts.length} orders in progress</p>
+        </div>
+        <button className="btn-primary" onClick={onNewReceipt}>🧾 New Receipt</button>
+      </div>
+      <div className="table-wrapper">
+        {receipts.length === 0 ? (
+          <div style={{ padding: "60px", textAlign: "center" }}>
+            <div style={{ fontSize: "48px", marginBottom: "12px" }}>🧾</div>
+            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No receipts yet</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>Create your first receipt or confirm an order.</p>
+            <button className="btn-primary" onClick={onNewReceipt}>🧾 Create Receipt</button>
+          </div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Status</th>
                 <th style={{ textAlign: "right" }}>Action</th>
               </tr>
             </thead>
@@ -497,21 +559,34 @@ function ReceiptsSection({ receipts, onNewReceipt }) {
                   <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{idx + 1}</td>
                   <td>
                     <div style={{ fontWeight: "600" }}>{r.customerName}</div>
-                    {r.customerEmail && <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{r.customerEmail}</div>}
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", maxWidth: "140px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.address || "—"}</div>
                   </td>
-                  <td style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{r.phone || "—"}</td>
-                  <td style={{ color: "var(--text-muted)", fontSize: "12px", maxWidth: "140px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.address || "—"}</td>
                   <td style={{ color: "var(--text-secondary)" }}>{r.products.length} items</td>
                   <td style={{ fontWeight: "700", color: "var(--primary)" }}>Rs. {r.totalAmount.toLocaleString()}</td>
-                  <td><span className="badge badge-green">💵 COD</span></td>
                   <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>
                     {new Date(r.createdAt).toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" })}
                   </td>
                   <td>
+                    <select 
+                      className="input" 
+                      style={{ padding: "4px 8px", fontSize: "13px", height: "auto", minWidth: "110px", borderColor: r.status === "completed" ? "var(--success)" : r.status === "running" ? "var(--primary)" : "var(--border)" }}
+                      value={r.status}
+                      onChange={(e) => onStatusChange(r._id, e.target.value)}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="running">Running</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </td>
+                  <td>
                     <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                      <button className="btn-ghost" style={{ fontSize: "13px", padding: "7px 14px" }} onClick={() => navigate(`/receipt/${r._id}`)}>
-                        🖨️ View
-                      </button>
+                      {r.status === "completed" ? (
+                        <button className="btn-ghost" style={{ fontSize: "13px", padding: "7px 14px", color: "var(--success)" }} onClick={() => navigate(`/receipt/${r._id}`)}>
+                          🖨️ Generate Receipt
+                        </button>
+                      ) : (
+                         <span style={{ fontSize: "12px", color: "var(--text-muted)", fontStyle: "italic", padding: "7px 14px" }}>Processing</span>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -758,9 +833,117 @@ function ReviewsSection({ products, onDeleteReview }) {
   );
 }
 
+/* ─── CATEGORY MODAL ─── */
+function CategoryModal({ category, onClose, onSave }) {
+  const [form, setForm] = useState(category || { name: "", description: "" });
+  const [saving, setSaving] = useState(false);
+  const isEdit = !!category?._id;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name) return;
+    setSaving(true);
+    try {
+      if (isEdit) {
+        const res = await api.put(`/categories/${category._id}`, form);
+        onSave(res.data, "edit");
+      } else {
+        const res = await api.post("/categories", form);
+        onSave(res.data, "add");
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Error saving category");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal" style={{ maxWidth: "400px" }}>
+        <div className="modal-header">
+          <h2 style={{ fontSize: "18px", fontWeight: "700" }}>{isEdit ? "✏️ Edit Category" : "➕ Add Category"}</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "24px", lineHeight: 1 }}>×</button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div>
+              <label>Category Name *</label>
+              <input className="input" placeholder="e.g. Hats" value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })} required />
+            </div>
+            <div>
+              <label>Description</label>
+              <textarea className="input" placeholder="Brief category description..." value={form.description}
+                onChange={e => setForm({ ...form, description: e.target.value })}
+                style={{ resize: "vertical", minHeight: "80px" }} />
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn-ghost" onClick={onClose}>Cancel</button>
+            <button type="submit" className="btn-primary" disabled={saving}>
+              {saving ? "Saving..." : isEdit ? "Save Changes" : "Add Category"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ─── CATEGORIES SECTION ─── */
+function CategoriesSection({ categories, onAdd, onEdit, onDelete }) {
+  return (
+    <div style={{ padding: "32px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+        <div>
+          <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Categories</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>Manage product categories</p>
+        </div>
+        <button className="btn-primary" onClick={onAdd}>+ Add Category</button>
+      </div>
+
+      <div className="table-wrapper">
+        {categories.length === 0 ? (
+          <div style={{ padding: "60px", textAlign: "center" }}>
+            <div style={{ fontSize: "48px", marginBottom: "12px" }}>📁</div>
+            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No categories yet</h3>
+            <button className="btn-primary" onClick={onAdd}>+ Add Category</button>
+          </div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th style={{ textAlign: "right" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.map((c) => (
+                <tr key={c._id}>
+                  <td style={{ fontWeight: "600" }}>{c.name}</td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "14px" }}>{c.description || "—"}</td>
+                  <td>
+                    <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                      <button className="btn-ghost" style={{ padding: "7px 14px", fontSize: "13px" }} onClick={() => onEdit(c)}>✏️ Edit</button>
+                      <button className="btn-danger" style={{ padding: "7px 14px" }} onClick={() => onDelete(c._id)}>🗑️</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ─── MAIN ADMIN PAGE ─── */
 export default function Admin() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [receipts, setReceipts] = useState([]);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -768,6 +951,9 @@ export default function Admin() {
   const [section, setSection] = useState("dashboard");
   const [showProductModal, setShowProductModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [editCategory, setEditCategory] = useState(null);
+  const [deleteCategoryId, setDeleteCategoryId] = useState(null);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [viewMessage, setViewMessage] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
@@ -775,13 +961,15 @@ export default function Admin() {
 
   const fetchAll = async () => {
     try {
-      const [pRes, rRes, uRes, mRes] = await Promise.all([
+      const [pRes, cRes, rRes, uRes, mRes] = await Promise.all([
         api.get("/products"),
+        api.get("/categories").catch(() => ({ data: [] })),
         api.get("/receipts"),
         api.get("/users"),
         api.get("/contact").catch(() => ({ data: [] })) // Default to empty if contact endpoint is missing
       ]);
       setProducts(pRes.data);
+      setCategories(cRes.data);
       setReceipts(rRes.data);
       setUsers(uRes.data);
       setMessages(mRes.data);
@@ -799,6 +987,25 @@ export default function Admin() {
     setShowProductModal(false);
     setEditProduct(null);
     showToast(`Product ${action === "add" ? "added" : "updated"} successfully!`);
+  };
+
+  const handleSaveCategory = (category, action) => {
+    if (action === "add") setCategories(prev => [category, ...prev]);
+    else setCategories(prev => prev.map(c => c._id === category._id ? category : c));
+    setShowCategoryModal(false);
+    setEditCategory(null);
+    showToast(`Category ${action === "add" ? "added" : "updated"} successfully!`);
+  };
+
+  const handleDeleteCategory = async (id) => {
+    try {
+      await api.delete(`/categories/${id}`);
+      setCategories(prev => prev.filter(c => c._id !== id));
+      setDeleteCategoryId(null);
+      showToast("Category deleted!");
+    } catch (err) {
+      showToast(err.response?.data?.message || "Delete failed", "error");
+    }
   };
 
   const handleDelete = async (id) => {
@@ -860,6 +1067,29 @@ export default function Admin() {
     }
   };
 
+  const handleConfirmOrder = async (id) => {
+    try {
+      const res = await api.put(`/receipts/${id}/status`, { status: "pending" });
+      setReceipts(prev => prev.map(r => r._id === id ? res.data : r));
+      showToast("Order confirmed and moved to processing!");
+    } catch (err) {
+      showToast("Failed to confirm order", "error");
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const res = await api.put(`/receipts/${id}/status`, { status: newStatus });
+      setReceipts(prev => prev.map(r => r._id === id ? res.data : r));
+      showToast(`Order marked as ${newStatus}`);
+    } catch (err) {
+      showToast("Failed to update status", "error");
+    }
+  };
+
+  const unconfirmedOrders = receipts.filter(r => r.status === "unconfirmed");
+  const processingReceipts = receipts.filter(r => r.status !== "unconfirmed");
+
   if (loading) {
     return (
       <AdminLayout activeSection="dashboard" onSectionChange={() => { }}>
@@ -879,13 +1109,25 @@ export default function Admin() {
       {section === "products" && (
         <ProductsSection
           products={products}
+          categories={categories}
           onAdd={() => setShowProductModal(true)}
           onEdit={p => { setEditProduct(p); setShowProductModal(true); }}
           onDelete={id => setDeleteId(id)}
         />
       )}
+      {section === "categories" && (
+        <CategoriesSection
+          categories={categories}
+          onAdd={() => setShowCategoryModal(true)}
+          onEdit={c => { setEditCategory(c); setShowCategoryModal(true); }}
+          onDelete={id => setDeleteCategoryId(id)}
+        />
+      )}
+      {section === "orders" && (
+        <OrdersSection orders={unconfirmedOrders} onConfirm={handleConfirmOrder} />
+      )}
       {section === "receipts" && (
-        <ReceiptsSection receipts={receipts} onNewReceipt={() => setShowReceiptModal(true)} />
+        <ReceiptsSection receipts={processingReceipts} onNewReceipt={() => setShowReceiptModal(true)} onStatusChange={handleStatusChange} />
       )}
       {section === "users" && (
         <UsersSection users={users} onDelete={handleDeleteUser} />
@@ -899,7 +1141,10 @@ export default function Admin() {
 
       {/* Modals */}
       {(showProductModal || editProduct) && (
-        <ProductModal product={editProduct} onClose={() => { setShowProductModal(false); setEditProduct(null); }} onSave={handleSave} />
+        <ProductModal product={editProduct} categories={categories} onClose={() => { setShowProductModal(false); setEditProduct(null); }} onSave={handleSave} />
+      )}
+      {(showCategoryModal || editCategory) && (
+        <CategoryModal category={editCategory} onClose={() => { setShowCategoryModal(false); setEditCategory(null); }} onSave={handleSaveCategory} />
       )}
       {showReceiptModal && (
         <ReceiptModal products={products} onClose={() => setShowReceiptModal(false)} />
@@ -921,6 +1166,25 @@ export default function Admin() {
             <div className="modal-footer">
               <button className="btn-ghost" onClick={() => setDeleteId(null)}>Cancel</button>
               <button className="btn-danger" style={{ padding: "10px 20px" }} onClick={() => handleDelete(deleteId)}>Delete Permanently</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteCategoryId && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ maxWidth: "400px" }}>
+            <div className="modal-header">
+              <h3 style={{ fontSize: "17px", fontWeight: "700" }}>🗑️ Delete Category</h3>
+            </div>
+            <div className="modal-body">
+              <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>
+                Are you sure you want to delete this category? Products currently using this category will not be deleted but they may not show correctly if filtered.
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-ghost" onClick={() => setDeleteCategoryId(null)}>Cancel</button>
+              <button className="btn-danger" style={{ padding: "10px 20px" }} onClick={() => handleDeleteCategory(deleteCategoryId)}>Delete Category</button>
             </div>
           </div>
         </div>

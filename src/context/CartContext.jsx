@@ -1,10 +1,13 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useRef } from "react";
+import { AuthContext } from "./AuthContext";
+import api from "../api/axios";
 
 export const CartContext = createContext();
 
 export default function CartProvider({ children }) {
+  const { user } = useContext(AuthContext);
+
   const [cart, setCart] = useState(() => {
-    // Persist cart in sessionStorage
     try {
       const stored = sessionStorage.getItem("cart");
       return stored ? JSON.parse(stored) : [];
@@ -13,10 +16,59 @@ export default function CartProvider({ children }) {
     }
   });
 
-  // Sync cart to sessionStorage whenever it changes
+  const isInitialMount = useRef(true);
+
+  // 1. Fetch backend cart when user logs in
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      api.get("/cart").then(res => {
+        const backendCart = res.data.items || [];
+        
+        // Merge with local cart if local cart has items
+        if (cart.length > 0) {
+          const merged = [...backendCart];
+          let changed = false;
+          for (const localItem of cart) {
+            const existing = merged.find(b => b.product._id === localItem.product._id && b.size === localItem.size && b.color === localItem.color);
+            if (existing) {
+              existing.qty += localItem.qty;
+              changed = true;
+            } else {
+              merged.push(localItem);
+              changed = true;
+            }
+          }
+          setCart(merged);
+        } else {
+          setCart(backendCart);
+        }
+      }).catch(err => console.error("Error fetching cart", err));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // 2. Sync to sessionStorage AND backend when cart changes
   useEffect(() => {
     sessionStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+    
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    if (user && user.role !== "admin") {
+      const timeoutId = setTimeout(() => {
+        const payload = cart.map(item => ({
+          productId: item.product._id,
+          qty: item.qty,
+          size: item.size,
+          color: item.color
+        }));
+        api.post("/cart/sync", { items: payload }).catch(err => console.error("Sync error", err));
+      }, 800); // Debounce sync
+      return () => clearTimeout(timeoutId);
+    }
+  }, [cart, user]);
 
   const addToCart = (product, qty = 1, size = "", color = "") => {
     setCart((prev) => {

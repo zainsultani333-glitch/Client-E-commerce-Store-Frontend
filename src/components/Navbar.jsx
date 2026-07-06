@@ -5,7 +5,7 @@ import { CartContext } from "../context/CartContext";
 
 export default function Navbar() {
   const { user, logout, isAdmin } = useContext(AuthContext);
-  const { cartCount } = useContext(CartContext);
+  const { cartCount, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,8 +19,8 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
-    setMenuOpen(false);
+    if (clearCart) clearCart();
+    window.location.href = "/login";
   };
 
   const navLink = (to, label) => {

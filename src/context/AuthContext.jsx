@@ -40,6 +40,7 @@ export default function AuthProvider({ children }) {
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    sessionStorage.removeItem("cart");
   };
 
   const isAdmin = user?.role === "admin";
