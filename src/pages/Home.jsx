@@ -177,7 +177,7 @@ export default function Home() {
 
           {/* Product grid */}
           {loading ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))", gap: "28px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "28px" }}>
               {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
             </div>
           ) : latestProducts.length === 0 ? (
@@ -186,8 +186,8 @@ export default function Home() {
               <p style={{ fontSize: "16px" }}>No products available yet.</p>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))", gap: "28px" }}>
-              {latestProducts.map((product) => (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "28px" }}>
+              {latestProducts.slice(0, 4).map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>

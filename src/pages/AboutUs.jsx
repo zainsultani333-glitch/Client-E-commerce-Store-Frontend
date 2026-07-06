@@ -52,7 +52,7 @@ const team = [
 
 export default function AboutUs() {
   return (
-    <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", fontFamily: "'Poppins', sans-serif" }}>
+    <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", fontFamily: "'Montserrat', sans-serif" }}>
 
       {/* ─── HERO BANNER ─── */}
       <div style={{ position: "relative", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", background: "#080808" }}>

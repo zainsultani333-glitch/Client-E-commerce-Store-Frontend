@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -61,7 +61,7 @@ html {
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   background-color: var(--bg-base);
   color: var(--text-primary);
   min-height: 100vh;

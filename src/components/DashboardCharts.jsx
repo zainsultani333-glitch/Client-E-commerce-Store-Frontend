@@ -84,11 +84,11 @@ export default function DashboardCharts({ products, receipts }) {
                   <stop offset="95%" stopColor="#c9a84c" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <XAxis dataKey="date" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontFamily: "'Poppins', sans-serif" }} tickLine={false} axisLine={false} dy={10} />
-              <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 12, fontFamily: "'Poppins', sans-serif" }} tickLine={false} axisLine={false} tickFormatter={v => `Rs.${v >= 1000 ? (v/1000).toFixed(1)+'k' : v}`} dx={-10} />
+              <XAxis dataKey="date" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontFamily: "'Montserrat', sans-serif" }} tickLine={false} axisLine={false} dy={10} />
+              <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 12, fontFamily: "'Montserrat', sans-serif" }} tickLine={false} axisLine={false} tickFormatter={v => `Rs.${v >= 1000 ? (v/1000).toFixed(1)+'k' : v}`} dx={-10} />
               <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="rgba(255,255,255,0.05)" />
               <RechartsTooltip 
-                contentStyle={{ background: 'rgba(20, 20, 23, 0.9)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: '12px', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', padding: '12px 16px', fontFamily: "'Poppins', sans-serif" }}
+                contentStyle={{ background: 'rgba(20, 20, 23, 0.9)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: '12px', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', padding: '12px 16px', fontFamily: "'Montserrat', sans-serif" }}
                 itemStyle={{ color: '#fff', fontSize: '14px', fontWeight: '600' }}
                 labelStyle={{ color: '#a8a89e', fontSize: '12px', marginBottom: '4px' }}
                 formatter={(value, name) => [name === 'revenue' ? `Rs. ${value.toLocaleString()}` : value, name === 'revenue' ? 'Revenue' : 'Orders']}
@@ -114,11 +114,11 @@ export default function DashboardCharts({ products, receipts }) {
                   ))}
                 </Pie>
                 <RechartsTooltip 
-                  contentStyle={{ background: 'rgba(20, 20, 23, 0.9)', border: '1px solid var(--border)', borderRadius: '12px', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', fontFamily: "'Poppins', sans-serif" }}
+                  contentStyle={{ background: 'rgba(20, 20, 23, 0.9)', border: '1px solid var(--border)', borderRadius: '12px', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', fontFamily: "'Montserrat', sans-serif" }}
                   itemStyle={{ color: '#fff', fontSize: '14px', fontWeight: '600' }}
                   formatter={(value) => [`${value} items`, 'Stock']}
                 />
-                <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '13px', color: 'var(--text-secondary)', fontFamily: "'Poppins', sans-serif", paddingTop: '20px' }} iconType="circle" />
+                <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '13px', color: 'var(--text-secondary)', fontFamily: "'Montserrat', sans-serif", paddingTop: '20px' }} iconType="circle" />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -133,11 +133,11 @@ export default function DashboardCharts({ products, receipts }) {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topProductsData} layout="vertical" margin={{ top: 0, right: 30, left: 20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="4 4" horizontal={false} stroke="rgba(255,255,255,0.05)" />
-                  <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontFamily: "'Poppins', sans-serif" }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 12, fontFamily: "'Poppins', sans-serif" }} width={110} axisLine={false} tickLine={false} />
+                  <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontFamily: "'Montserrat', sans-serif" }} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 12, fontFamily: "'Montserrat', sans-serif" }} width={110} axisLine={false} tickLine={false} />
                   <RechartsTooltip 
                     cursor={{ fill: 'rgba(255, 255, 255, 0.03)' }}
-                    contentStyle={{ background: 'rgba(20, 20, 23, 0.9)', border: '1px solid var(--border)', borderRadius: '12px', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', fontFamily: "'Poppins', sans-serif" }}
+                    contentStyle={{ background: 'rgba(20, 20, 23, 0.9)', border: '1px solid var(--border)', borderRadius: '12px', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', fontFamily: "'Montserrat', sans-serif" }}
                     itemStyle={{ color: '#fff', fontSize: '14px', fontWeight: '600' }}
                     labelStyle={{ color: '#a8a89e', fontSize: '12px', marginBottom: '4px' }}
                   />

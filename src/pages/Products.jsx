@@ -90,7 +90,7 @@ export default function Products() {
                   fontWeight: "600",
                   cursor: "pointer",
                   transition: "var(--transition)",
-                  fontFamily: "'Poppins', sans-serif",
+                  fontFamily: "'Montserrat', sans-serif",
                   background: selectedCategory === cat ? "linear-gradient(135deg, var(--primary), var(--primary-light))" : "transparent",
                   color: selectedCategory === cat ? "var(--bg-base)" : "var(--text-secondary)",
                   border: `1px solid ${selectedCategory === cat ? "var(--primary)" : "var(--border)"}`,
@@ -144,7 +144,7 @@ export default function Products() {
           {(searchTerm || selectedCategory !== "All") && (
             <button
               onClick={() => { setSearchTerm(""); setSelectedCategory("All"); }}
-              style={{ fontSize: "13px", color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}
+              style={{ fontSize: "13px", color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Montserrat', sans-serif" }}
             >
               Clear filters ✕
             </button>
@@ -153,7 +153,7 @@ export default function Products() {
 
         {/* Grid */}
         {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "20px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
             {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : sorted.length === 0 ? (
@@ -174,7 +174,7 @@ export default function Products() {
             </button>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "20px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
             {sorted.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}

@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
+import Footer from "../components/Footer";
+import ProductCard from "../components/ProductCard";
 
 const CATEGORY_COLORS = {
   "Shirts": "#3b82f6",
@@ -26,6 +28,14 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [reviewName, setReviewName] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewIndex, setReviewIndex] = useState(0);
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   const [zoomScale, setZoomScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -62,9 +72,51 @@ export default function ProductDetail() {
     window.scrollTo(0, 0);
     setLoading(true);
     api.get(`/products/${id}`)
-      .then(res => { setProduct(res.data); setLoading(false); })
+      .then(res => { 
+        setProduct(res.data); 
+        setLoading(false); 
+        if (res.data.category) {
+          api.get('/products').then(allRes => {
+            const related = allRes.data.filter(p => p.category === res.data.category && p._id !== res.data._id).slice(0, 4);
+            setRelatedProducts(related);
+          });
+        }
+      })
       .catch(() => { setError("Product not found"); setLoading(false); });
   }, [id]);
+
+  // The CSS marquee animation handles the loop, so no interval needed here
+  useEffect(() => {
+    // Left empty since we moved to CSS animation
+  }, []);
+
+  const displayReviews = product?.reviews ? [...product.reviews].reverse() : [];
+  const loopReviews = displayReviews.length > 3 ? [...displayReviews, ...displayReviews] : displayReviews;
+
+  const averageRating = product?.reviews?.length
+    ? (product.reviews.reduce((acc, rev) => acc + rev.rating, 0) / product.reviews.length).toFixed(1)
+    : 0;
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!reviewName || !reviewComment) return alert("Please fill all fields");
+    setSubmittingReview(true);
+    try {
+      const res = await api.post(`/products/${product._id}/reviews`, {
+        userName: reviewName,
+        rating: reviewRating,
+        comment: reviewComment
+      });
+      setProduct(res.data.product);
+      setReviewName("");
+      setReviewRating(5);
+      setReviewComment("");
+    } catch (err) {
+      alert("Failed to add review");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!user) { navigate("/login"); return; }
@@ -330,7 +382,7 @@ export default function ProductDetail() {
                         background: selectedSize === size ? "var(--primary-glow)" : "var(--bg-card)",
                         color: selectedSize === size ? "var(--primary)" : "var(--text-secondary)",
                         fontWeight: selectedSize === size ? "700" : "500",
-                        cursor: "pointer", transition: "var(--transition)", fontFamily: "'Poppins', sans-serif"
+                        cursor: "pointer", transition: "var(--transition)", fontFamily: "'Montserrat', sans-serif"
                       }}
                     >
                       {size}
@@ -358,7 +410,7 @@ export default function ProductDetail() {
                         background: selectedColor === color ? "var(--primary-glow)" : "var(--bg-card)",
                         color: selectedColor === color ? "var(--primary)" : "var(--text-secondary)",
                         fontWeight: selectedColor === color ? "700" : "500",
-                        cursor: "pointer", transition: "var(--transition)", fontFamily: "'Poppins', sans-serif"
+                        cursor: "pointer", transition: "var(--transition)", fontFamily: "'Montserrat', sans-serif"
                       }}
                     >
                       {color}
@@ -427,15 +479,141 @@ export default function ProductDetail() {
                   </svg> Add to Basket — Rs. {(product.price * qty).toLocaleString()}</>
                 )}
               </button>
-              <button onClick={() => navigate(-1)} className="btn-ghost" style={{ padding: "14px", fontSize: "15px", justifyContent: "center" }}>
-                ← Back to Shop
-              </button>
             </div>
 
 
           </div>
         </div>
       </div>
+
+      {/* ─── REVIEWS SECTION ─── */}
+      <div className="container" style={{ padding: "0 24px 64px" }}>
+        <h2 style={{ fontSize: "28px", fontWeight: "800", marginBottom: "32px", color: "var(--text-primary)", textAlign: "center", textTransform: "uppercase", letterSpacing: "1px" }}>Customer Reviews</h2>
+        
+        {/* Top: Summary & Reviews Carousel */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "32px" }}>
+           {/* Summary Header */}
+           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ fontSize: "32px", fontWeight: "900", color: "var(--primary)", lineHeight: 1 }}>{averageRating}</div>
+                <div>
+                  <div style={{ color: "#fbbf24", fontSize: "16px", letterSpacing: "1px" }}>
+                    {"★".repeat(Math.round(averageRating))}{"☆".repeat(5 - Math.round(averageRating))}
+                  </div>
+                  <div style={{ fontSize: "12px", color: "var(--text-secondary)", textTransform: "uppercase" }}>Based on {product.reviews?.length || 0} reviews</div>
+                </div>
+              </div>
+           </div>
+
+           {/* Carousel */}
+           <div style={{ overflow: "hidden", position: "relative", padding: "10px 0" }}>
+            <style>
+              {`
+                @keyframes scrollMarquee {
+                  0% { transform: translateX(0); }
+                  100% { transform: translateX(calc(-50% - 8px)); }
+                }
+                .reviews-track {
+                  animation: scrollMarquee 20s linear infinite;
+                }
+                .reviews-track:hover {
+                  animation-play-state: paused;
+                }
+              `}
+            </style>
+            {displayReviews.length > 0 ? (
+              <div className={displayReviews.length > 3 ? "reviews-track" : ""} style={{ 
+                display: "flex", 
+                gap: "16px", 
+                width: displayReviews.length > 3 ? "max-content" : "100%"
+              }}>
+                {loopReviews.map((rev, idx) => (
+                  <div key={idx} style={{ 
+                    flex: displayReviews.length > 3 ? "0 0 320px" : "1",
+                    background: "var(--bg-card)", 
+                    padding: "20px", 
+                    borderRadius: "12px", 
+                    border: "1px solid var(--border)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+                    display: "flex", flexDirection: "column", gap: "12px"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "linear-gradient(135deg, var(--primary), var(--primary-light))", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "700", fontSize: "14px", flexShrink: 0 }}>
+                          {rev.userName.charAt(0).toUpperCase()}
+                        </div>
+                        <div style={{ overflow: "hidden" }}>
+                          <strong style={{ fontSize: "14px", color: "var(--text-primary)", display: "block", marginBottom: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{rev.userName}</strong>
+                          <span style={{ fontSize: "10px", color: "var(--text-muted)", textTransform: "uppercase" }}>{new Date(rev.date).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      <div style={{ color: "#fbbf24", fontSize: "14px", flexShrink: 0 }}>
+                        {"★".repeat(rev.rating)}{"☆".repeat(5 - rev.rating)}
+                      </div>
+                    </div>
+                    <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, fontStyle: "italic", margin: 0 }}>"{rev.comment}"</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ padding: "40px 0", textAlign: "center", color: "var(--text-muted)", fontSize: "15px" }}>
+                No reviews yet. Be the first to share your thoughts!
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom: Form / Write a Review Button */}
+        <div style={{ maxWidth: "600px", margin: "0 auto", textAlign: "center" }}>
+          {!showReviewForm ? (
+            <button onClick={() => setShowReviewForm(true)} className="btn-primary" style={{ padding: "14px 32px", borderRadius: "12px", fontSize: "15px" }}>Add Review</button>
+          ) : (
+            <form onSubmit={handleSubmitReview} style={{ display: "flex", flexDirection: "column", gap: "16px", textAlign: "left", background: "var(--bg-elevated)", padding: "24px", borderRadius: "16px", border: "1px solid var(--border)" }}>
+              <h3 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "8px", textAlign: "center" }}>Add Your Review</h3>
+              
+              <div style={{ display: "flex", gap: "16px" }}>
+                <input type="text" placeholder="Your Name" value={reviewName} onChange={e => setReviewName(e.target.value)} required style={{ flex: 1, padding: "12px", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-primary)", outline: "none", fontFamily: "'Montserrat', sans-serif", fontSize: "14px" }} />
+              </div>
+              
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "4px 0" }}>
+                <span style={{ fontSize: "14px", fontWeight: "600" }}>Rating:</span>
+                <div style={{ display: "flex", gap: "4px" }}>
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <button 
+                      key={star} 
+                      type="button" 
+                      onClick={() => setReviewRating(star)}
+                      style={{ background: "none", border: "none", color: star <= reviewRating ? "#fbbf24" : "var(--border)", fontSize: "24px", cursor: "pointer", padding: 0, lineHeight: 1 }}
+                    >★</button>
+                  ))}
+                </div>
+              </div>
+              
+              <textarea placeholder="Your Comment" value={reviewComment} onChange={e => setReviewComment(e.target.value)} required rows="3" style={{ width: "100%", padding: "12px", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-primary)", outline: "none", resize: "vertical", fontFamily: "'Montserrat', sans-serif", fontSize: "14px" }}></textarea>
+              
+              <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+                <button type="submit" disabled={submittingReview} className="btn-primary" style={{ flex: 1, padding: "12px", borderRadius: "8px" }}>{submittingReview ? "Submitting..." : "Submit Review"}</button>
+                <button type="button" onClick={() => setShowReviewForm(false)} className="btn-ghost" style={{ padding: "12px", borderRadius: "8px" }}>Cancel</button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {/* ─── RELATED PRODUCTS ─── */}
+      {relatedProducts.length > 0 && (
+        <div className="container" style={{ padding: "0 24px 64px" }}>
+          <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "24px", color: "var(--text-primary)", borderBottom: "1px solid var(--border)", paddingBottom: "12px" }}>More from {product.category}</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "24px" }}>
+            {relatedProducts.map(rp => (
+              <ProductCard key={rp._id} product={rp} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── FOOTER ─── */}
+      <Footer />
 
       {/* ─── IMAGE ZOOM MODAL ─── */}
       {imgZoomed && (
@@ -484,7 +662,7 @@ export default function ProductDetail() {
             <button onClick={() => { setZoomScale(prev => { const n = Math.max(prev - 0.2, 1); if (n === 1) setPan({ x: 0, y: 0 }); return n; }); }} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", color: "#fff", cursor: "pointer", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.3)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.2)"}>
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 12H4" /></svg>
             </button>
-            <span style={{ color: "#fff", fontSize: "16px", fontWeight: "600", minWidth: "50px", textAlign: "center", fontFamily: "'Poppins', sans-serif" }}>
+            <span style={{ color: "#fff", fontSize: "16px", fontWeight: "600", minWidth: "50px", textAlign: "center", fontFamily: "'Montserrat', sans-serif" }}>
               {Math.round(zoomScale * 100)}%
             </span>
             <button onClick={() => setZoomScale(prev => Math.min(prev + 0.2, 4))} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", color: "#fff", cursor: "pointer", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.3)"} onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.2)"}>

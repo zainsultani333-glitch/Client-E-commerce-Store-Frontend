@@ -29,7 +29,7 @@ export default function ContactUs() {
   };
 
   return (
-    <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", fontFamily: "'Poppins', sans-serif" }}>
+    <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", fontFamily: "'Montserrat', sans-serif" }}>
       
       {/* ─── HERO BANNER ─── */}
       <div style={{ position: "relative", minHeight: "50vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", background: "#080808" }}>
@@ -75,22 +75,22 @@ export default function ContactUs() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>First Name</label>
-                  <input type="text" placeholder="John" required value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
+                  <input type="text" placeholder="John" required value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Montserrat', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Last Name</label>
-                  <input type="text" placeholder="Doe" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
+                  <input type="text" placeholder="Doe" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Montserrat', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
                 </div>
               </div>
               
               <div>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Email Address</label>
-                <input type="email" placeholder="john@example.com" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
+                <input type="email" placeholder="john@example.com" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Montserrat', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
               </div>
 
               <div>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Subject</label>
-                <select value={formData.subject} onChange={e => setFormData({...formData, subject: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Poppins', sans-serif", cursor: "pointer", appearance: "none" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"}>
+                <select value={formData.subject} onChange={e => setFormData({...formData, subject: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Montserrat', sans-serif", cursor: "pointer", appearance: "none" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"}>
                   <option>Order Inquiry</option>
                   <option>Returns & Exchanges</option>
                   <option>Product Information</option>
@@ -100,7 +100,7 @@ export default function ContactUs() {
               
               <div>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Message</label>
-                <textarea placeholder="How can we help you?" required rows="5" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} style={{ width: "100%", padding: "16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", resize: "vertical", fontFamily: "'Poppins', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"}></textarea>
+                <textarea placeholder="How can we help you?" required rows="5" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} style={{ width: "100%", padding: "16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", resize: "vertical", fontFamily: "'Montserrat', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"}></textarea>
               </div>
               
               <button type="submit" disabled={loading} className="btn-primary" style={{ padding: "16px", fontSize: "15px", fontWeight: "700", borderRadius: "10px", marginTop: "8px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", opacity: loading ? 0.7 : 1 }}>

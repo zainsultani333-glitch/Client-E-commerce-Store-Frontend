@@ -325,7 +325,7 @@ function DashboardSection({ products, receipts, onGoTo }) {
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
             <h2 style={{ fontSize: "16px", fontWeight: "700", margin: 0 }}>Recent Orders</h2>
-            <button onClick={() => onGoTo("receipts")} style={{ fontSize: "13px", color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Poppins',sans-serif" }}>View all →</button>
+            <button onClick={() => onGoTo("receipts")} style={{ fontSize: "13px", color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Montserrat',sans-serif" }}>View all →</button>
           </div>
           <div className="table-wrapper">
             <table className="table">
@@ -693,6 +693,71 @@ function MessagesSection({ messages, onViewMessage, onDelete }) {
   );
 }
 
+/* ─── REVIEWS SECTION ─── */
+function ReviewsSection({ products, onDeleteReview }) {
+  // Flatten reviews from all products
+  const allReviews = products.flatMap(p => 
+    (p.reviews || []).map(r => ({ ...r, productId: p._id, productName: p.name }))
+  ).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  return (
+    <div style={{ padding: "32px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+        <div>
+          <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Customer Reviews</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{allReviews.length} reviews across all products</p>
+        </div>
+      </div>
+      <div className="table-wrapper">
+        {allReviews.length === 0 ? (
+          <div style={{ padding: "60px", textAlign: "center" }}>
+            <div style={{ fontSize: "48px", marginBottom: "12px" }}>⭐</div>
+            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No reviews yet</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>When customers review products, they will appear here.</p>
+          </div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Reviewer</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Date</th>
+                <th style={{ textAlign: "right" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allReviews.map((r, idx) => (
+                <tr key={`${r.productId}-${r._id}`}>
+                  <td style={{ fontWeight: "600" }}>{r.productName}</td>
+                  <td>{r.userName}</td>
+                  <td style={{ color: "#fbbf24", fontSize: "14px" }}>
+                    {"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}
+                  </td>
+                  <td style={{ color: "var(--text-secondary)", fontSize: "13px", maxWidth: "250px" }}>
+                    <div style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      "{r.comment}"
+                    </div>
+                  </td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>
+                    {new Date(r.date).toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" })}
+                  </td>
+                  <td>
+                    <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                      <button className="btn-danger" style={{ padding: "7px 14px" }} onClick={() => onDeleteReview(r.productId, r._id)}>🗑️ Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ─── MAIN ADMIN PAGE ─── */
 export default function Admin() {
   const [products, setProducts] = useState([]);
@@ -779,6 +844,22 @@ export default function Admin() {
     }
   };
 
+  const handleDeleteReview = async (productId, reviewId) => {
+    if (!window.confirm("Are you sure you want to delete this review?")) return;
+    try {
+      await api.delete(`/products/${productId}/reviews/${reviewId}`);
+      setProducts(prev => prev.map(p => {
+        if (p._id === productId) {
+          return { ...p, reviews: p.reviews.filter(r => r._id !== reviewId) };
+        }
+        return p;
+      }));
+      showToast("Review deleted!");
+    } catch (err) {
+      showToast(err.response?.data?.message || "Delete failed", "error");
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout activeSection="dashboard" onSectionChange={() => { }}>
@@ -811,6 +892,9 @@ export default function Admin() {
       )}
       {section === "messages" && (
         <MessagesSection messages={messages} onViewMessage={setViewMessage} onDelete={handleDeleteMessage} />
+      )}
+      {section === "reviews" && (
+        <ReviewsSection products={products} onDeleteReview={handleDeleteReview} />
       )}
 
       {/* Modals */}
