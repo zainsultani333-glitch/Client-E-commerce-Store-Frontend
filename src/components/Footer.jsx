@@ -43,29 +43,40 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h4 style={{ fontSize: "12px", fontWeight: "800", color: "#fff", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "16px" }}>
-              Collections
+              Quick Links
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {["Shop All", "New Arrivals", "Shirts", "Hoodies", "Shorts", "Trousers"].map(link => (
-                <Link key={link} to="/products" style={{ color: "rgba(255,255,255,0.6)", fontSize: "13px", textDecoration: "none", transition: "all 0.3s ease", display: "inline-block", width: "fit-content" }}
+              {[
+                { name: "Home", path: "/" },
+                { name: "Products", path: "/products" },
+                { name: "About Us", path: "/about" },
+                { name: "Contact Us", path: "/contact" }
+              ].map(link => (
+                <Link key={link.name} to={link.path} style={{ color: "rgba(255,255,255,0.6)", fontSize: "13px", textDecoration: "none", transition: "all 0.3s ease", display: "inline-block", width: "fit-content" }}
                   onMouseEnter={e => { e.target.style.color = "var(--primary)"; e.target.style.transform = "translateX(4px)"; }}
                   onMouseLeave={e => { e.target.style.color = "rgba(255,255,255,0.6)"; e.target.style.transform = "translateX(0)"; }}
-                >{link}</Link>
+                >{link.name}</Link>
               ))}
             </div>
           </div>
 
-          {/* Help & Support */}
+          {/* Account & Support */}
           <div>
             <h4 style={{ fontSize: "12px", fontWeight: "800", color: "#fff", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "16px" }}>
-              Support
+              Account & Support
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {["Contact Us", "Shipping & Returns", "Size Guide", "FAQs", "Privacy Policy"].map(link => (
-                <Link key={link} to="/" style={{ color: "rgba(255,255,255,0.6)", fontSize: "13px", textDecoration: "none", transition: "all 0.3s ease", display: "inline-block", width: "fit-content" }}
+              {[
+                { name: "Login", path: "/login" },
+                { name: "Register", path: "/register" },
+                { name: "Shopping Cart", path: "/cart" },
+                { name: "FAQs", path: "/" },
+                { name: "Privacy Policy", path: "/" }
+              ].map(link => (
+                <Link key={link.name} to={link.path} style={{ color: "rgba(255,255,255,0.6)", fontSize: "13px", textDecoration: "none", transition: "all 0.3s ease", display: "inline-block", width: "fit-content" }}
                   onMouseEnter={e => { e.target.style.color = "var(--primary)"; e.target.style.transform = "translateX(4px)"; }}
                   onMouseLeave={e => { e.target.style.color = "rgba(255,255,255,0.6)"; e.target.style.transform = "translateX(0)"; }}
-                >{link}</Link>
+                >{link.name}</Link>
               ))}
             </div>
           </div>

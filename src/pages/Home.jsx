@@ -27,10 +27,26 @@ const Icons = {
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const heroImages = [
+    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop"
+  ];
+
   useEffect(() => {
     api.get("/products")
       .then((res) => { setProducts(res.data); setLoading(false); })
       .catch(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const slideInterval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % heroImages.length);
+    }, 4000);
+    return () => clearInterval(slideInterval);
   }, []);
 
   const latestProducts = products.slice(0, 4);
@@ -38,107 +54,89 @@ export default function Home() {
   return (
     <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", overflowX: "hidden" }}>
 
-      {/* ─── HERO SECTION ─── */}
-      <div style={{
-        position: "relative",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        overflow: "hidden",
-        backgroundColor: "#080808",
-      }}>
-        {/* Ambient glow blobs */}
-        <div style={{ position: "absolute", top: "-200px", left: "-200px", width: "600px", height: "600px", background: "radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: "-100px", right: "0", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
-
-        {/* Subtle grid texture */}
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)", backgroundSize: "60px 60px", pointerEvents: "none" }} />
-
-        <div className="container" style={{ position: "relative", zIndex: 2, padding: "120px 24px 80px", width: "100%" }}>
+      {/* ─── HERO BANNER ─── */}
+      <div style={{ position: "relative", minHeight: "85vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", backgroundColor: "#C2E8CE" }}>
+        <div className="container" style={{ padding: "0 24px", width: "100%" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "center" }}>
 
             {/* ── LEFT: TEXT ── */}
-            <div style={{ animation: "fadeUp 0.9s ease-out" }}>
-              {/* Badge */}
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", marginBottom: "32px", padding: "8px 18px", background: "rgba(201,168,76,0.08)", backdropFilter: "blur(12px)", borderRadius: "100px", border: "1px solid rgba(201,168,76,0.3)" }}>
-                <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 10px var(--primary)", animation: "pulse 2s infinite" }} />
-                <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--primary)", letterSpacing: "2.5px", textTransform: "uppercase" }}>New Season 2026</span>
-              </div>
-
-              {/* Heading */}
-              <h1 style={{ fontSize: "clamp(44px, 6vw, 84px)", fontWeight: "900", lineHeight: 1.05, marginBottom: "24px", color: "#fff", letterSpacing: "-1px" }}>
-                Dress Like<br />
-                <span style={{ background: "linear-gradient(to right, #c9a84c, #e8c96e, #fff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                  You Mean
-                </span><br />
-                <span style={{ color: "rgba(255,255,255,0.9)", fontWeight: "300", fontStyle: "italic", fontSize: "0.85em" }}>Business.</span>
+            <div style={{ paddingRight: "40px", animation: "fadeUp 0.9s ease-out" }}>
+              <h1 style={{ fontSize: "clamp(48px, 6vw, 72px)", fontWeight: "700", fontFamily: "'Playfair Display', serif", color: "#1F4529", lineHeight: 1.1, marginBottom: "24px", letterSpacing: "-1px" }}>
+                Discover and<br />
+                Find Your Own<br />
+                Fashion!
               </h1>
 
-              {/* Divider */}
-              <div style={{ width: "60px", height: "4px", background: "linear-gradient(90deg, #c9a84c, transparent)", borderRadius: "2px", marginBottom: "24px" }} />
-
-              {/* Subtext */}
-              <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.7)", maxWidth: "440px", lineHeight: 1.6, marginBottom: "40px", fontWeight: "300" }}>
-                Precision-crafted shirts, hoodies, shorts &amp; trousers for the modern Pakistani gentleman. Every stitch tells a story.
+              <p style={{ fontSize: "18px", color: "#2B5E39", lineHeight: 1.6, marginBottom: "40px", maxWidth: "440px", fontWeight: "500" }}>
+                Explore our curated collection of stylish clothing and accessories tailored to your unique taste.
               </p>
 
-              {/* CTA Buttons */}
-              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", marginBottom: "56px" }}>
-                <Link to="/products" className="btn-primary" style={{ padding: "16px 36px", fontSize: "15px", borderRadius: "10px", letterSpacing: "0.5px", fontWeight: "700", boxShadow: "0 8px 30px rgba(201,168,76,0.35)", display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                  Shop Now
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                </Link>
-                <Link to="/about" style={{ padding: "16px 36px", fontSize: "15px", borderRadius: "10px", fontWeight: "600", color: "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.04)", backdropFilter: "blur(8px)", textDecoration: "none", transition: "all 0.3s ease", display: "inline-flex", alignItems: "center", gap: "8px" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.09)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.35)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; }}
-                >
-                  Our Story
-                </Link>
+              <Link to="/products" style={{ display: "inline-block", padding: "16px 36px", fontSize: "14px", borderRadius: "4px", backgroundColor: "#1F4529", color: "#fff", fontWeight: "600", textDecoration: "none", boxShadow: "0 10px 30px rgba(31,69,41,0.25)", transition: "all 0.3s ease", letterSpacing: "1px" }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 15px 35px rgba(31,69,41,0.35)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 10px 30px rgba(31,69,41,0.25)"; }}
+              >
+                EXPLORE NOW
+              </Link>
+            </div>
+
+            {/* ── RIGHT: IMAGE & SHAPES ── */}
+            <div style={{ position: "relative", height: "600px", display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeUp 1.1s ease-out" }}>
+              {/* Background Shape */}
+              <div style={{ position: "absolute", top: "5%", right: "5%", width: "80%", height: "90%", backgroundColor: "#6BBE82", borderRadius: "80px 180px 80px 80px" }} />
+
+              {/* Dot Pattern 1 (Top Right) */}
+              <div style={{ position: "absolute", top: "20%", right: "0", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", opacity: 0.4 }}>
+                {[...Array(16)].map((_, i) => <div key={`dot1-${i}`} style={{ width: "6px", height: "6px", backgroundColor: "#1F4529", borderRadius: "50%" }} />)}
               </div>
 
-              {/* Stats row */}
-              <div style={{ display: "flex", gap: "36px", flexWrap: "wrap" }}>
-                {[
-                  { value: "500+", label: "Happy Customers" },
-                  { value: "4", label: "Collections" },
-                  { value: "100%", label: "Premium Quality" },
-                ].map(stat => (
-                  <div key={stat.label}>
-                    <div style={{ fontSize: "28px", fontWeight: "900", color: "var(--primary)", lineHeight: 1 }}>{stat.value}</div>
-                    <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginTop: "4px", fontWeight: "500", letterSpacing: "0.5px" }}>{stat.label}</div>
-                  </div>
+              {/* Dot Pattern 2 (Bottom Left) */}
+              <div style={{ position: "absolute", bottom: "15%", left: "5%", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", opacity: 0.4 }}>
+                {[...Array(16)].map((_, i) => <div key={`dot2-${i}`} style={{ width: "6px", height: "6px", backgroundColor: "#1F4529", borderRadius: "50%" }} />)}
+              </div>
+
+              {/* Main Image Slider */}
+              <div style={{ position: "relative", zIndex: 2, height: "100%", width: "80%", borderRadius: "80px 180px 80px 80px", overflow: "hidden", boxShadow: "0 20px 40px rgba(0,0,0,0.15)", backgroundColor: "#C2E8CE" }}>
+                {heroImages.map((src, index) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt={`Fashion Model ${index + 1}`}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "center top",
+                      opacity: currentSlide === index ? 1 : 0,
+                      transition: "opacity 1s ease-in-out"
+                    }}
+                  />
                 ))}
-              </div>
-            </div>
 
-            {/* ── RIGHT: IMAGE COLLAGE ── */}
-            <div style={{ position: "relative", height: "620px", animation: "fadeUp 1.1s ease-out" }}>
-              {/* Main large image */}
-              <div style={{ position: "absolute", top: 0, left: "10%", right: 0, height: "75%", borderRadius: "24px", overflow: "hidden", boxShadow: "0 30px 80px rgba(0,0,0,0.6)" }}>
-                <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=800&auto=format&fit=crop" alt="Premium fashion" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%)" }} />
-              </div>
-
-              {/* Secondary image */}
-              <div style={{ position: "absolute", bottom: 0, left: 0, width: "52%", height: "42%", borderRadius: "20px", overflow: "hidden", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", border: "3px solid rgba(255,255,255,0.06)" }}>
-                <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=600&auto=format&fit=crop" alt="Fashion collection" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              </div>
-
-              {/* Floating badge — new arrival */}
-              <div style={{ position: "absolute", top: "18px", left: 0, background: "linear-gradient(135deg, var(--primary), #b8943e)", padding: "12px 20px", borderRadius: "14px", boxShadow: "0 10px 30px rgba(201,168,76,0.4)", zIndex: 10 }}>
-                <div style={{ fontSize: "10px", fontWeight: "700", color: "rgba(0,0,0,0.7)", letterSpacing: "1.5px", textTransform: "uppercase" }}>New Drop</div>
-                <div style={{ fontSize: "18px", fontWeight: "900", color: "#000", lineHeight: 1.1 }}>SS '26</div>
-              </div>
-
-              {/* Floating rating card */}
-              <div style={{ position: "absolute", bottom: "60px", right: "-10px", background: "rgba(20,20,20,0.9)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.08)", padding: "14px 18px", borderRadius: "16px", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", zIndex: 10, minWidth: "160px" }}>
-                <div style={{ display: "flex", gap: "3px", marginBottom: "6px" }}>
-                  {[...Array(5)].map((_, i) => <svg key={i} width="13" height="13" fill="var(--primary)" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" /></svg>)}
+                {/* Slider Dots */}
+                <div style={{ position: "absolute", bottom: "24px", left: "0", width: "100%", display: "flex", justifyContent: "center", gap: "8px", zIndex: 10 }}>
+                  {heroImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      style={{
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "50%",
+                        backgroundColor: currentSlide === index ? "#1F4529" : "rgba(255,255,255,0.7)",
+                        border: currentSlide === index ? "2px solid #fff" : "none",
+                        cursor: "pointer",
+                        padding: 0,
+                        transition: "all 0.3s ease",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
+                      }}
+                    />
+                  ))}
                 </div>
-                <div style={{ fontSize: "13px", fontWeight: "700", color: "#fff" }}>4.9 / 5 Rating</div>
-                <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", marginTop: "2px" }}>500+ verified reviews</div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -297,110 +295,138 @@ export default function Home() {
 
 
 
-      {/* ─── BRAND PROMISE / WHY CHOOSE US ─── */}
-      <div className="container" style={{ padding: "70px 24px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "32px" }}>
-          {[
-            { icon: <Icons.Quality />, title: "Premium Quality", desc: "Expertly crafted using the finest fabrics for unparalleled comfort and longevity." },
-            { icon: <Icons.Delivery />, title: "Express Delivery", desc: "Fast, reliable shipping directly to your doorstep, anywhere in the country." },
-            { icon: <Icons.Secure />, title: "Secure Checkout", desc: "Your data is protected. We use bank-level encryption for all transactions." },
-            { icon: <Icons.Support />, title: "24/7 Support", desc: "Our dedicated team is always here to assist you with any questions." }
-          ].map((feat) => (
-            <div key={feat.title} style={{ padding: "32px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "20px", transition: "all 0.3s ease", position: "relative", overflow: "hidden" }} className="hover-lift">
-              <div style={{ position: "absolute", top: "-20px", right: "-20px", width: "100px", height: "100px", background: "var(--primary)", filter: "blur(60px)", opacity: 0.1 }} />
-              <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: "linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.05))", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px" }}>
-                {feat.icon}
-              </div>
-              <h3 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "12px", color: "var(--text-primary)" }}>{feat.title}</h3>
-              <p style={{ fontSize: "15px", color: "var(--text-muted)", lineHeight: 1.6 }}>{feat.desc}</p>
+
+
+      {/* ─── WHY CHOOSE US ─── */}
+      <div style={{ background: "#F5F6F8", padding: "80px 0" }}>
+        <div className="container" style={{ padding: "0 24px" }}>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "50px", flexWrap: "wrap", gap: "24px" }}>
+            <div>
+              <h2 style={{ fontSize: "36px", fontWeight: "700", fontFamily: "'Playfair Display', serif", color: "#111827", marginBottom: "8px" }}>
+                Why Choose Us
+              </h2>
+              <p style={{ fontSize: "16px", color: "#6B7280" }}>
+                Fashion You Can Feel Good About
+              </p>
             </div>
-          ))}
+
+            <Link to="/about" style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 24px", fontSize: "14px", fontWeight: "600", color: "#374151", border: "1px solid #D1D5DB", borderRadius: "30px", textDecoration: "none", transition: "all 0.3s", backgroundColor: "transparent" }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#F3F4F6" }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent" }}
+            >
+              Learn More ↗
+            </Link>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
+            {[
+              {
+                title: "Ethical Production",
+                desc: "Our garments are made in fair-trade certified facilities for all involved.",
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>,
+                bgColor: "#DBEAFE"
+              },
+              {
+                title: "Commitment to Innovation",
+                desc: "We're always seeking out new ways to improve our sustainability efforts.",
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1.45.62 2.84 1.5 3.5.76.76 1.23 1.52 1.41 2.5"></path></svg>,
+                bgColor: "#CCFBF1"
+              },
+              {
+                title: "Quality You Can Trust",
+                desc: "We take pride in producing high-quality, that stands the test of time.",
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#DB2777" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>,
+                bgColor: "#FCE7F3"
+              },
+              {
+                title: "Sustainable Materials",
+                desc: "We source eco-friendly fabrics, such as organic cotton and recycled materials.",
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M21 12a9 9 0 1 0-9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21v-5h5"></path></svg>,
+                bgColor: "#EDE9FE"
+              }
+            ].map((item, idx) => (
+              <div key={idx} style={{ backgroundColor: "#fff", padding: "40px 24px", borderRadius: "16px", boxShadow: "0 2px 10px rgba(0, 0, 0, 0.02)", display: "flex", flexDirection: "column" }}>
+                <div style={{ width: "50px", height: "50px", borderRadius: "30% 70% 70% 30% / 30% 30% 70% 70%", backgroundColor: item.bgColor, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "28px" }}>
+                  {item.icon}
+                </div>
+                <h3 style={{ fontSize: "18px", fontWeight: "700", fontFamily: "'Playfair Display', serif", color: "#111827", marginBottom: "12px", lineHeight: 1.3 }}>
+                  {item.title}
+                </h3>
+                <p style={{ fontSize: "14px", color: "#9CA3AF", lineHeight: 1.6, fontWeight: "400" }}>
+                  {item.desc}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* ─── TESTIMONIALS ─── */}
-      <div style={{ background: "var(--bg-elevated)", padding: "80px 0", position: "relative", overflow: "hidden" }}>
-        {/* Top accent line */}
-        <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "1px", background: "linear-gradient(90deg, transparent, var(--primary), transparent)" }} />
-
+      <div style={{ background: "#F5F6F8", padding: "80px 0" }}>
         <div className="container" style={{ padding: "0 24px" }}>
-          {/* Section header */}
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "40px", flexWrap: "wrap", gap: "24px" }}>
+          
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "50px", flexWrap: "wrap", gap: "24px" }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
-                <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Customer Reviews</span>
-              </div>
-              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05, margin: 0, letterSpacing: "-0.5px" }}>
-                What Our <span style={{ background: "linear-gradient(to right, #c9a84c, #e8c96e)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Customers</span> Say
+              <h2 style={{ fontSize: "36px", fontWeight: "700", fontFamily: "'Playfair Display', serif", color: "#111827", marginBottom: "8px" }}>
+                What Our Customers Say
               </h2>
+              <p style={{ fontSize: "16px", color: "#6B7280" }}>
+                Real reviews from our lovely community
+              </p>
             </div>
             {/* Aggregate rating pill */}
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "12px 20px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "12px 20px", background: "#fff", border: "1px solid #E5E7EB", borderRadius: "16px", boxShadow: "0 2px 10px rgba(0,0,0,0.02)" }}>
               <div style={{ display: "flex", gap: "3px" }}>
-                {[...Array(5)].map((_, i) => <svg key={i} width="14" height="14" fill="var(--primary)" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" /></svg>)}
+                {[...Array(5)].map((_, i) => <svg key={i} width="14" height="14" fill="#EAB308" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" /></svg>)}
               </div>
-              <span style={{ fontSize: "14px", fontWeight: "800", color: "var(--text-primary)" }}>4.9</span>
-              <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: "400" }}>· 500+ reviews</span>
+              <span style={{ fontSize: "14px", fontWeight: "800", color: "#111827" }}>4.9</span>
+              <span style={{ fontSize: "13px", color: "#6B7280", fontWeight: "400" }}>· 500+ reviews</span>
             </div>
           </div>
 
           {/* Testimonial grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
             {[
               { text: "The fit is absolutely perfect. I've completely replaced my wardrobe with their shirts. Highly recommended for anyone looking for quality.", author: "Ahmed Khan", role: "Verified Buyer", product: "Premium Shirts", initial: "A", color: "#3b82f6" },
               { text: "Fast delivery, elegant packaging, and the trousers are unbelievably comfortable. It's rare to find this level of craftsmanship nowadays.", author: "Usman Ali", role: "Verified Buyer", product: "Classic Trousers", initial: "U", color: "#a855f7" },
-              { text: "Their customer support is unmatched. They helped me pick the right sizes and the exchange process was seamless. A loyal customer now.", author: "Kamran Shah", role: "Verified Buyer", product: "Signature Hoodie", initial: "K", color: "#22c55e" }
+              { text: "Their customer support is unmatched. They helped me pick the right sizes and the exchange process was seamless. A loyal customer now.", author: "Kamran Shah", role: "Verified Buyer", product: "Signature Hoodie", initial: "K", color: "#22c55e" },
+              { text: "I was blown away by the quality of the fabrics. The attention to detail is evident in every stitch. I'll definitely be buying more.", author: "Fatima Noor", role: "Verified Buyer", product: "Summer Collection", initial: "F", color: "#eab308" }
             ].map((t, idx) => (
               <div key={idx} style={{
-                background: "var(--bg-card)",
-                borderRadius: "20px",
-                border: "1px solid var(--border)",
-                padding: "32px",
-                position: "relative",
-                overflow: "hidden",
-                transition: "all 0.3s ease",
-                boxShadow: "var(--shadow-sm)"
+                backgroundColor: "#fff",
+                padding: "32px 24px",
+                borderRadius: "16px",
+                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.02)",
+                display: "flex",
+                flexDirection: "column",
+                position: "relative"
               }} className="hover-lift">
-                {/* Decorative top bar */}
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: `linear-gradient(90deg, ${t.color}, transparent)`, borderRadius: "20px 20px 0 0" }} />
-
+                
                 {/* Stars */}
-                <div style={{ display: "flex", gap: "4px", marginBottom: "20px" }}>
-                  {[...Array(5)].map((_, i) => <svg key={i} width="14" height="14" fill="var(--primary)" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" /></svg>)}
+                <div style={{ display: "flex", gap: "4px", marginBottom: "16px" }}>
+                  {[...Array(5)].map((_, i) => <svg key={i} width="14" height="14" fill="#EAB308" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" /></svg>)}
                 </div>
 
-                {/* Quote mark */}
-                <div style={{ fontSize: "64px", lineHeight: 0.7, color: "var(--primary)", opacity: 0.12, fontWeight: "900", marginBottom: "16px", fontFamily: "Georgia, serif" }}>"</div>
-
                 {/* Review text */}
-                <p style={{ fontSize: "15px", color: "var(--text-primary)", lineHeight: 1.75, marginBottom: "28px", fontWeight: "400" }}>
-                  {t.text}
+                <p style={{ fontSize: "14px", color: "#4B5563", lineHeight: 1.7, marginBottom: "24px", fontWeight: "400", flex: 1 }}>
+                  "{t.text}"
                 </p>
 
-                {/* Divider */}
-                <div style={{ height: "1px", background: "var(--border)", marginBottom: "20px" }} />
-
                 {/* Author row */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div style={{
-                      width: "42px", height: "42px", borderRadius: "50%",
-                      background: `linear-gradient(135deg, ${t.color}22, ${t.color}44)`,
-                      border: `2px solid ${t.color}55`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: "16px", fontWeight: "800", color: t.color
-                    }}>
-                      {t.initial}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", lineHeight: 1.2 }}>{t.author}</div>
-                      <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>{t.role}</div>
-                    </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "auto", borderTop: "1px solid #F3F4F6", paddingTop: "20px" }}>
+                  <div style={{
+                    width: "40px", height: "40px", borderRadius: "50%",
+                    backgroundColor: `${t.color}22`,
+                    color: t.color,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "16px", fontWeight: "700"
+                  }}>
+                    {t.initial}
                   </div>
-                  {/* Product tag */}
-                  <div style={{ fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", background: "var(--bg-elevated)", padding: "4px 10px", borderRadius: "20px", border: "1px solid var(--border)", whiteSpace: "nowrap" }}>
-                    {t.product}
+                  <div>
+                    <div style={{ fontSize: "14px", fontWeight: "700", color: "#111827", lineHeight: 1.2 }}>{t.author}</div>
+                    <div style={{ fontSize: "12px", color: "#6B7280", marginTop: "2px" }}>{t.role}</div>
                   </div>
                 </div>
               </div>

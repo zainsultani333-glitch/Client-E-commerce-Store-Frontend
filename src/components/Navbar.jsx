@@ -127,7 +127,7 @@ export default function Navbar() {
                   }} onMouseEnter={e => { e.target.style.background = "var(--bg-card)"; e.target.style.borderColor = "var(--text-muted)"; }} onMouseLeave={e => { e.target.style.background = "transparent"; e.target.style.borderColor = "var(--border)"; }}>Sign In</Link>
                   <Link to="/register" style={{ 
                     padding: "10px 24px", borderRadius: "10px", fontSize: "14px", fontWeight: "700",
-                    color: "#000", textDecoration: "none", transition: "all 0.3s ease",
+                    color: "#fff", textDecoration: "none", transition: "all 0.3s ease",
                     background: "var(--primary)", boxShadow: "0 4px 15px rgba(201,168,76,0.3)"
                   }} onMouseEnter={e => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 6px 20px rgba(201,168,76,0.4)"; }} onMouseLeave={e => { e.target.style.transform = "translateY(0)"; e.target.style.boxShadow = "0 4px 15px rgba(201,168,76,0.3)"; }}>
                     Register
