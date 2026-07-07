@@ -21,6 +21,47 @@ function Toast({ msg, type, onClose }) {
   );
 }
 
+/* ─── PAGINATION ─── */
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  if (totalPages <= 1) return null;
+
+  return (
+    <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "10px", marginTop: "24px", paddingBottom: "12px" }}>
+      <button 
+        style={{ 
+          padding: "8px 16px", fontSize: "14px", fontWeight: "600",
+          background: "var(--primary)", color: "#fff", 
+          border: "none", borderRadius: "8px",
+          opacity: currentPage === 1 ? 0.5 : 1,
+          cursor: currentPage === 1 ? "not-allowed" : "pointer",
+          transition: "all 0.2s"
+        }}
+        disabled={currentPage === 1} 
+        onClick={() => onPageChange(currentPage - 1)}
+      >
+        Previous
+      </button>
+      <span style={{ fontSize: "14px", color: "var(--text-secondary)", fontWeight: "600", minWidth: "80px", textAlign: "center" }}>
+        Page {currentPage} of {totalPages}
+      </span>
+      <button 
+        style={{ 
+          padding: "8px 16px", fontSize: "14px", fontWeight: "600",
+          background: "var(--primary)", color: "#fff", 
+          border: "none", borderRadius: "8px",
+          opacity: currentPage === totalPages ? 0.5 : 1,
+          cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+          transition: "all 0.2s"
+        }}
+        disabled={currentPage === totalPages} 
+        onClick={() => onPageChange(currentPage + 1)}
+      >
+        Next
+      </button>
+    </div>
+  );
+}
+
 /* ─── MULTI-IMAGE UPLOAD ─── */
 function MultiImageUpload({ images, cloudinaryIds, onChange }) {
   const [uploading, setUploading] = useState(false);
@@ -75,8 +116,9 @@ function MultiImageUpload({ images, cloudinaryIds, onChange }) {
 /* ─── PRODUCT MODAL ─── */
 function ProductModal({ product, categories, onClose, onSave }) {
   const defaultCategory = categories && categories.length > 0 ? categories[0].name : "";
-  const emptyForm = { name: "", description: "", price: "", quantity: "", category: defaultCategory, sizes: "", colors: "", images: [], cloudinaryIds: [] };
-  const [form, setForm] = useState(product ? { ...product, price: String(product.price), quantity: String(product.quantity), sizes: product.sizes?.join(", ") || "", colors: product.colors?.join(", ") || "", images: product.images || [], cloudinaryIds: product.cloudinaryIds || [] } : emptyForm);
+  const emptyForm = { name: "", description: "", price: "", discountPercentage: "", quantity: "", category: defaultCategory, sizes: "", colors: "", images: [], cloudinaryIds: [] };
+  const basePrice = product ? (product.originalPrice || product.price) : "";
+  const [form, setForm] = useState(product ? { ...product, price: String(basePrice), discountPercentage: product.discountPercentage ? String(product.discountPercentage) : "", quantity: String(product.quantity), sizes: product.sizes?.join(", ") || "", colors: product.colors?.join(", ") || "", images: product.images || [], cloudinaryIds: product.cloudinaryIds || [] } : emptyForm);
   const [saving, setSaving] = useState(false);
   const isEdit = !!product?._id;
 
@@ -89,7 +131,7 @@ function ProductModal({ product, categories, onClose, onSave }) {
     try {
       const sizesArray = form.sizes.split(",").map(s => s.trim()).filter(Boolean);
       const colorsArray = form.colors.split(",").map(c => c.trim()).filter(Boolean);
-      const payload = { ...form, price: Number(form.price), quantity: Number(form.quantity), sizes: sizesArray, colors: colorsArray };
+      const payload = { ...form, price: Number(form.price), discountPercentage: form.discountPercentage ? Number(form.discountPercentage) : 0, quantity: Number(form.quantity), sizes: sizesArray, colors: colorsArray };
       if (isEdit) {
         const res = await api.put(`/products/${product._id}`, payload);
         onSave(res.data, "edit");
@@ -119,11 +161,16 @@ function ProductModal({ product, categories, onClose, onSave }) {
               <input className="input" placeholder="e.g. White Oxford Shirt" value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })} required />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
               <div>
-                <label>Price (Rs.) *</label>
+                <label>Base Price (Rs.) *</label>
                 <input className="input" type="number" min="0" placeholder="1500" value={form.price}
                   onChange={e => setForm({ ...form, price: e.target.value })} required />
+              </div>
+              <div>
+                <label>Discount (%)</label>
+                <input className="input" type="number" min="0" max="100" placeholder="e.g. 20" value={form.discountPercentage}
+                  onChange={e => setForm({ ...form, discountPercentage: e.target.value })} />
               </div>
               <div>
                 <label>Quantity *</label>
@@ -169,14 +216,19 @@ function ProductModal({ product, categories, onClose, onSave }) {
 }
 
 /* ─── RECEIPT MODAL ─── */
-function ReceiptModal({ products, onClose }) {
+function ReceiptModal({ products, order, onClose, onSave }) {
   const navigate = useNavigate();
-  const [customerName, setCustomerName] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [items, setItems] = useState([{ productId: "", name: "", price: 0, category: "", qty: 1 }]);
+  const [customerName, setCustomerName] = useState(order?.customerName || "");
+  const [customerEmail, setCustomerEmail] = useState(order?.customerEmail || "");
+  const [phone, setPhone] = useState(order?.phone || "");
+  const [address, setAddress] = useState(order?.address || "");
+  const [items, setItems] = useState(
+    order?.products?.length > 0
+      ? order.products.map(p => ({ productId: p.productId, name: p.name, price: p.price, category: p.category || "", qty: p.quantity }))
+      : [{ productId: "", name: "", price: 0, category: "", qty: 1 }]
+  );
   const [saving, setSaving] = useState(false);
+  const isEdit = !!order?._id;
 
   const addItem = () => setItems([...items, { productId: "", name: "", price: 0, category: "", qty: 1 }]);
   const removeItem = (idx) => items.length > 1 && setItems(items.filter((_, i) => i !== idx));
@@ -199,16 +251,24 @@ function ReceiptModal({ products, onClose }) {
     if (validItems.length === 0) { alert("Add at least one product"); return; }
     setSaving(true);
     try {
-      const res = await api.post("/receipts", {
+      const payload = {
         customerName, customerEmail, phone, address,
-        paymentMethod: "Cash on Delivery",
+        paymentMethod: order?.paymentMethod || "Cash on Delivery",
         products: validItems.map(i => ({ productId: i.productId, name: i.name, category: i.category, quantity: i.qty, price: i.price })),
         totalAmount: total,
-      });
-      onClose();
-      navigate(`/receipt/${res.data._id}`);
+      };
+
+      if (isEdit) {
+        const res = await api.put(`/receipts/${order._id}`, payload);
+        onSave(res.data);
+        onClose();
+      } else {
+        const res = await api.post("/receipts", payload);
+        onClose();
+        navigate(`/receipt/${res.data._id}`);
+      }
     } catch (err) {
-      alert(err.response?.data?.message || "Error creating receipt");
+      alert(err.response?.data?.message || `Error ${isEdit ? "updating" : "creating"} receipt`);
     } finally {
       setSaving(false);
     }
@@ -218,7 +278,7 @@ function ReceiptModal({ products, onClose }) {
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal" style={{ maxWidth: "660px" }}>
         <div className="modal-header">
-          <h2 style={{ fontSize: "18px", fontWeight: "700" }}>🧾 Create Receipt</h2>
+          <h2 style={{ fontSize: "18px", fontWeight: "700" }}>{isEdit ? "✏️ Edit Order" : "🧾 Create Receipt"}</h2>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "24px" }}>×</button>
         </div>
         <form onSubmit={handleSubmit}>
@@ -276,7 +336,7 @@ function ReceiptModal({ products, onClose }) {
           </div>
           <div className="modal-footer">
             <button type="button" className="btn-ghost" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn-primary" disabled={saving}>{saving ? "Generating..." : "Generate Receipt"}</button>
+            <button type="submit" className="btn-primary" disabled={saving}>{saving ? "Saving..." : isEdit ? "Save Changes" : "Create Receipt"}</button>
           </div>
         </form>
       </div>
@@ -340,7 +400,7 @@ function DashboardSection({ products, receipts, onGoTo }) {
                 </tr>
               </thead>
               <tbody>
-                {receipts.slice(0, 5).map(r => (
+                {receipts.slice(0, 4).map(r => (
                   <tr key={r._id}>
                     <td style={{ fontWeight: "600" }}>{r.customerName}</td>
                     <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{r.phone || "—"}</td>
@@ -364,12 +424,19 @@ function DashboardSection({ products, receipts, onGoTo }) {
 function ProductsSection({ products, categories, onAdd, onEdit, onDelete }) {
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  useEffect(() => { setCurrentPage(1); }, [search, filterCat]);
 
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
     const matchCat = filterCat === "All" || p.category === filterCat;
     return matchSearch && matchCat;
   });
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const currentItems = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div style={{ padding: "32px" }}>
@@ -418,9 +485,9 @@ function ProductsSection({ products, categories, onAdd, onEdit, onDelete }) {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p, idx) => (
+              {currentItems.map((p, idx) => (
                 <tr key={p._id}>
-                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{idx + 1}</td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                   <td>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                       {p.images && p.images.length > 0 ? (
@@ -453,18 +520,25 @@ function ProductsSection({ products, categories, onAdd, onEdit, onDelete }) {
           </table>
         )}
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   );
 }
 
 /* ─── ORDERS SECTION ─── */
-function OrdersSection({ orders, onConfirm }) {
+function OrdersSection({ orders, onConfirm, onCancel, onEditOrder }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
+  const currentItems = orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div style={{ padding: "32px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
         <div>
           <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Orders</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{orders.length} new unconfirmed orders</p>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{orders.length} pending orders</p>
         </div>
       </div>
       <div className="table-wrapper">
@@ -489,9 +563,9 @@ function OrdersSection({ orders, onConfirm }) {
               </tr>
             </thead>
             <tbody>
-              {orders.map((o, idx) => (
+              {currentItems.map((o, idx) => (
                 <tr key={o._id}>
-                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{idx + 1}</td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                   <td>
                     <div style={{ fontWeight: "600" }}>{o.customerName}</div>
                     {o.customerEmail && <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{o.customerEmail}</div>}
@@ -504,9 +578,15 @@ function OrdersSection({ orders, onConfirm }) {
                     {new Date(o.createdAt).toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                   </td>
                   <td>
-                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                      <button className="btn-primary" style={{ fontSize: "13px", padding: "7px 14px" }} onClick={() => onConfirm(o._id)}>
-                        ✅ Confirm Order
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+                      <button className="btn-ghost" style={{ fontSize: "12px", padding: "5px 10px", color: "var(--primary)" }} onClick={() => onEditOrder(o)}>
+                        ✏️ Edit
+                      </button>
+                      <button className="btn-danger" style={{ fontSize: "12px", padding: "5px 10px" }} onClick={() => onCancel(o._id)}>
+                        ❌ Cancel
+                      </button>
+                      <button className="btn-primary" style={{ fontSize: "12px", padding: "5px 10px" }} onClick={() => onConfirm(o._id)}>
+                        ✅ Confirm
                       </button>
                     </div>
                   </td>
@@ -516,13 +596,20 @@ function OrdersSection({ orders, onConfirm }) {
           </table>
         )}
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   );
 }
 
 /* ─── RECEIPTS SECTION ─── */
-function ReceiptsSection({ receipts, onNewReceipt, onStatusChange }) {
+function ReceiptsSection({ receipts, onNewReceipt, onStatusChange, onDelete }) {
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  const totalPages = Math.ceil(receipts.length / itemsPerPage);
+  const currentItems = receipts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div style={{ padding: "32px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
@@ -554,9 +641,9 @@ function ReceiptsSection({ receipts, onNewReceipt, onStatusChange }) {
               </tr>
             </thead>
             <tbody>
-              {receipts.map((r, idx) => (
+              {currentItems.map((r, idx) => (
                 <tr key={r._id}>
-                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{idx + 1}</td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                   <td>
                     <div style={{ fontWeight: "600" }}>{r.customerName}</div>
                     <div style={{ fontSize: "12px", color: "var(--text-muted)", maxWidth: "140px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.address || "—"}</div>
@@ -569,21 +656,26 @@ function ReceiptsSection({ receipts, onNewReceipt, onStatusChange }) {
                   <td>
                     <select 
                       className="input" 
-                      style={{ padding: "4px 8px", fontSize: "13px", height: "auto", minWidth: "110px", borderColor: r.status === "completed" ? "var(--success)" : r.status === "running" ? "var(--primary)" : "var(--border)" }}
+                      style={{ padding: "4px 8px", fontSize: "13px", height: "auto", minWidth: "110px", borderColor: r.status === "completed" ? "var(--success)" : r.status === "processing" ? "var(--primary)" : "var(--border)" }}
                       value={r.status}
                       onChange={(e) => onStatusChange(r._id, e.target.value)}
+                      disabled={r.status === "completed"}
                     >
-                      <option value="pending">Pending</option>
-                      <option value="running">Running</option>
+                      <option value="processing">Processing</option>
                       <option value="completed">Completed</option>
                     </select>
                   </td>
                   <td>
-                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
                       {r.status === "completed" ? (
-                        <button className="btn-ghost" style={{ fontSize: "13px", padding: "7px 14px", color: "var(--success)" }} onClick={() => navigate(`/receipt/${r._id}`)}>
-                          🖨️ Generate Receipt
-                        </button>
+                        <>
+                          <button className="btn-ghost" style={{ fontSize: "13px", padding: "7px 14px", color: "var(--success)" }} onClick={() => navigate(`/receipt/${r._id}`)}>
+                            🖨️ Generate Receipt
+                          </button>
+                          <button className="btn-danger" style={{ fontSize: "13px", padding: "7px 14px" }} onClick={() => onDelete(r._id)}>
+                            🗑️ Delete
+                          </button>
+                        </>
                       ) : (
                          <span style={{ fontSize: "12px", color: "var(--text-muted)", fontStyle: "italic", padding: "7px 14px" }}>Processing</span>
                       )}
@@ -595,12 +687,19 @@ function ReceiptsSection({ receipts, onNewReceipt, onStatusChange }) {
           </table>
         )}
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   );
 }
 
 /* ─── USERS SECTION ─── */
 function UsersSection({ users, onDelete }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const currentItems = users.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div style={{ padding: "32px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
@@ -629,9 +728,9 @@ function UsersSection({ users, onDelete }) {
               </tr>
             </thead>
             <tbody>
-              {users.map((u, idx) => (
+              {currentItems.map((u, idx) => (
                 <tr key={u._id}>
-                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{idx + 1}</td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                   <td style={{ fontWeight: "600" }}>{u.name}</td>
                   <td style={{ color: "var(--text-secondary)" }}>{u.email}</td>
                   <td>
@@ -657,6 +756,7 @@ function UsersSection({ users, onDelete }) {
           </table>
         )}
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   );
 }
@@ -700,6 +800,12 @@ function MessageModal({ message, onClose, onMarkRead }) {
 
 /* ─── MESSAGES SECTION ─── */
 function MessagesSection({ messages, onViewMessage, onDelete }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  const totalPages = Math.ceil(messages.length / itemsPerPage);
+  const currentItems = messages.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div style={{ padding: "32px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
@@ -729,9 +835,9 @@ function MessagesSection({ messages, onViewMessage, onDelete }) {
               </tr>
             </thead>
             <tbody>
-              {messages.map((m, idx) => (
+              {currentItems.map((m, idx) => (
                 <tr key={m._id} style={{ background: m.status === "unread" ? "rgba(201,168,76,0.05)" : "transparent" }}>
-                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{idx + 1}</td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                   <td>
                     <div style={{ fontWeight: m.status === "unread" ? "800" : "600" }}>{m.firstName} {m.lastName}</div>
                     <div style={{ color: "var(--text-secondary)", fontSize: "12px" }}>{m.email}</div>
@@ -764,6 +870,7 @@ function MessagesSection({ messages, onViewMessage, onDelete }) {
           </table>
         )}
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   );
 }
@@ -774,6 +881,12 @@ function ReviewsSection({ products, onDeleteReview }) {
   const allReviews = products.flatMap(p => 
     (p.reviews || []).map(r => ({ ...r, productId: p._id, productName: p.name }))
   ).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  const totalPages = Math.ceil(allReviews.length / itemsPerPage);
+  const currentItems = allReviews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div style={{ padding: "32px" }}>
@@ -803,7 +916,7 @@ function ReviewsSection({ products, onDeleteReview }) {
               </tr>
             </thead>
             <tbody>
-              {allReviews.map((r, idx) => (
+              {currentItems.map((r, idx) => (
                 <tr key={`${r.productId}-${r._id}`}>
                   <td style={{ fontWeight: "600" }}>{r.productName}</td>
                   <td>{r.userName}</td>
@@ -829,6 +942,7 @@ function ReviewsSection({ products, onDeleteReview }) {
           </table>
         )}
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   );
 }
@@ -893,6 +1007,12 @@ function CategoryModal({ category, onClose, onSave }) {
 
 /* ─── CATEGORIES SECTION ─── */
 function CategoriesSection({ categories, onAdd, onEdit, onDelete }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const currentItems = categories.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div style={{ padding: "32px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
@@ -920,7 +1040,7 @@ function CategoriesSection({ categories, onAdd, onEdit, onDelete }) {
               </tr>
             </thead>
             <tbody>
-              {categories.map((c) => (
+              {currentItems.map((c) => (
                 <tr key={c._id}>
                   <td style={{ fontWeight: "600" }}>{c.name}</td>
                   <td style={{ color: "var(--text-muted)", fontSize: "14px" }}>{c.description || "—"}</td>
@@ -936,6 +1056,7 @@ function CategoriesSection({ categories, onAdd, onEdit, onDelete }) {
           </table>
         )}
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   );
 }
@@ -948,13 +1069,20 @@ export default function Admin() {
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [section, setSection] = useState("dashboard");
+  const [section, setSection] = useState(() => {
+    return localStorage.getItem("adminSection") || "dashboard";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("adminSection", section);
+  }, [section]);
   const [showProductModal, setShowProductModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
   const [deleteCategoryId, setDeleteCategoryId] = useState(null);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [editOrder, setEditOrder] = useState(null);
   const [viewMessage, setViewMessage] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [toast, setToast] = useState(null);
@@ -1069,11 +1197,22 @@ export default function Admin() {
 
   const handleConfirmOrder = async (id) => {
     try {
-      const res = await api.put(`/receipts/${id}/status`, { status: "pending" });
+      const res = await api.put(`/receipts/${id}/status`, { status: "processing" });
       setReceipts(prev => prev.map(r => r._id === id ? res.data : r));
       showToast("Order confirmed and moved to processing!");
     } catch (err) {
       showToast("Failed to confirm order", "error");
+    }
+  };
+
+  const handleCancelOrder = async (id) => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) return;
+    try {
+      const res = await api.put(`/receipts/${id}/status`, { status: "cancelled" });
+      setReceipts(prev => prev.map(r => r._id === id ? res.data : r));
+      showToast("Order cancelled!");
+    } catch (err) {
+      showToast("Failed to cancel order", "error");
     }
   };
 
@@ -1087,8 +1226,19 @@ export default function Admin() {
     }
   };
 
-  const unconfirmedOrders = receipts.filter(r => r.status === "unconfirmed");
-  const processingReceipts = receipts.filter(r => r.status !== "unconfirmed");
+  const handleDeleteReceipt = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this completed receipt?")) return;
+    try {
+      await api.delete(`/receipts/${id}`);
+      setReceipts(prev => prev.filter(r => r._id !== id));
+      showToast("Receipt deleted!");
+    } catch (err) {
+      showToast("Failed to delete receipt", "error");
+    }
+  };
+
+  const pendingOrders = receipts.filter(r => r.status === "pending");
+  const processingReceipts = receipts.filter(r => r.status !== "pending" && r.status !== "cancelled");
 
   if (loading) {
     return (
@@ -1124,10 +1274,15 @@ export default function Admin() {
         />
       )}
       {section === "orders" && (
-        <OrdersSection orders={unconfirmedOrders} onConfirm={handleConfirmOrder} />
+        <OrdersSection 
+          orders={pendingOrders} 
+          onConfirm={handleConfirmOrder} 
+          onCancel={handleCancelOrder}
+          onEditOrder={(order) => { setEditOrder(order); setShowReceiptModal(true); }}
+        />
       )}
       {section === "receipts" && (
-        <ReceiptsSection receipts={processingReceipts} onNewReceipt={() => setShowReceiptModal(true)} onStatusChange={handleStatusChange} />
+        <ReceiptsSection receipts={processingReceipts} onNewReceipt={() => setShowReceiptModal(true)} onStatusChange={handleStatusChange} onDelete={handleDeleteReceipt} />
       )}
       {section === "users" && (
         <UsersSection users={users} onDelete={handleDeleteUser} />
@@ -1146,8 +1301,15 @@ export default function Admin() {
       {(showCategoryModal || editCategory) && (
         <CategoryModal category={editCategory} onClose={() => { setShowCategoryModal(false); setEditCategory(null); }} onSave={handleSaveCategory} />
       )}
-      {showReceiptModal && (
-        <ReceiptModal products={products} onClose={() => setShowReceiptModal(false)} />
+      {(showReceiptModal || editOrder) && (
+        <ReceiptModal 
+          products={products} 
+          order={editOrder}
+          onClose={() => { setShowReceiptModal(false); setEditOrder(null); }} 
+          onSave={(updatedOrder) => {
+            setReceipts(prev => prev.map(r => r._id === updatedOrder._id ? updatedOrder : r));
+          }}
+        />
       )}
       {viewMessage && (
         <MessageModal message={viewMessage} onClose={() => setViewMessage(null)} onMarkRead={handleMarkMessageRead} />

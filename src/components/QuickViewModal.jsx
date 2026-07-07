@@ -116,6 +116,11 @@ export default function QuickViewModal({ product, onClose }) {
                </span>
             )}
             <span>Rs.{product.price.toLocaleString()} PKR</span>
+            {product.discountPercentage > 0 && (
+              <span style={{ fontSize: "12px", background: "#e11d48", color: "#fff", padding: "2px 6px", borderRadius: "4px", fontWeight: "700" }}>
+                -{product.discountPercentage}%
+              </span>
+            )}
           </div>
 
           <p style={{ fontSize: "12px", color: "#6b7280", margin: "0 0 16px 0" }}>

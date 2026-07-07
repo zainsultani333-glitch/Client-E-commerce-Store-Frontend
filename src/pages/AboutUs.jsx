@@ -1,5 +1,6 @@
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const values = [
   {
@@ -98,7 +99,13 @@ export default function AboutUs() {
       {/* ─── OUR STORY ─── */}
       <div style={{ padding: "100px 0" }}>
         <div className="container" style={{ padding: "0 24px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}
+          >
             {/* Image */}
             <div style={{ position: "relative" }}>
               <div style={{ borderRadius: "24px", overflow: "hidden", aspectRatio: "4/5", boxShadow: "0 30px 80px rgba(0,0,0,0.15)" }}>
@@ -117,10 +124,6 @@ export default function AboutUs() {
 
             {/* Text */}
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-                <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Our Story</span>
-              </div>
               <h2 style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.1, marginBottom: "24px" }}>
                 From a Small Workshop<br />to a <span style={{ color: "var(--primary)" }}>Trusted Brand</span>
               </h2>
@@ -138,77 +141,86 @@ export default function AboutUs() {
                 <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       {/* ─── OUR VALUES ─── */}
       <div style={{ background: "var(--bg-elevated)", padding: "100px 0" }}>
         <div className="container" style={{ padding: "0 24px" }}>
-          <div style={{ textAlign: "center", marginBottom: "60px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
-              <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-              <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>What We Stand For</span>
-              <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div style={{ textAlign: "center", marginBottom: "60px" }}>
+              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05 }}>
+                Our Core <span style={{ color: "var(--primary)" }}>Values</span>
+              </h2>
             </div>
-            <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05 }}>
-              Our Core <span style={{ color: "var(--primary)" }}>Values</span>
-            </h2>
-          </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "24px" }}>
-            {values.map((v) => (
-              <div key={v.title} style={{ background: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border)", padding: "36px 32px", position: "relative", overflow: "hidden", transition: "all 0.3s ease" }} className="hover-lift">
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: `linear-gradient(90deg, ${v.color}, transparent)`, borderRadius: "20px 20px 0 0" }} />
-                <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: `${v.color}15`, color: v.color, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px", border: `1px solid ${v.color}30` }}>
-                  {v.icon}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "24px" }}>
+              {values.map((v) => (
+                <div key={v.title} style={{ background: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border)", padding: "36px 32px", position: "relative", overflow: "hidden", transition: "all 0.3s ease" }} className="hover-lift">
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: `linear-gradient(90deg, ${v.color}, transparent)`, borderRadius: "20px 20px 0 0" }} />
+                  <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: `${v.color}15`, color: v.color, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px", border: `1px solid ${v.color}30` }}>
+                    {v.icon}
+                  </div>
+                  <h3 style={{ fontSize: "19px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "12px" }}>{v.title}</h3>
+                  <p style={{ fontSize: "14px", color: "var(--text-muted)", lineHeight: 1.75 }}>{v.desc}</p>
                 </div>
-                <h3 style={{ fontSize: "19px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "12px" }}>{v.title}</h3>
-                <p style={{ fontSize: "14px", color: "var(--text-muted)", lineHeight: 1.75 }}>{v.desc}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
 
       {/* ─── MEET THE TEAM ─── */}
       <div style={{ padding: "100px 0" }}>
         <div className="container" style={{ padding: "0 24px" }}>
-          <div style={{ textAlign: "center", marginBottom: "60px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
-              <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-              <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>The People</span>
-              <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div style={{ textAlign: "center", marginBottom: "60px" }}>
+              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05 }}>
+                Meet the <span style={{ color: "var(--primary)" }}>Team</span>
+              </h2>
             </div>
-            <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05 }}>
-              Meet the <span style={{ color: "var(--primary)" }}>Team</span>
-            </h2>
-          </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "28px" }}>
-            {team.map((member) => (
-              <div key={member.name} style={{ background: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border)", padding: "36px 32px", textAlign: "center", transition: "all 0.3s ease" }} className="hover-lift">
-                <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: `linear-gradient(135deg, ${member.color}22, ${member.color}44)`, border: `3px solid ${member.color}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", fontWeight: "900", color: member.color, margin: "0 auto 20px" }}>
-                  {member.initial}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "28px" }}>
+              {team.map((member) => (
+                <div key={member.name} style={{ background: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border)", padding: "36px 32px", textAlign: "center", transition: "all 0.3s ease" }} className="hover-lift">
+                  <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: `linear-gradient(135deg, ${member.color}22, ${member.color}44)`, border: `3px solid ${member.color}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", fontWeight: "900", color: member.color, margin: "0 auto 20px" }}>
+                    {member.initial}
+                  </div>
+                  <h3 style={{ fontSize: "18px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "4px" }}>{member.name}</h3>
+                  <div style={{ fontSize: "12px", fontWeight: "700", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "16px" }}>{member.role}</div>
+                  <div style={{ height: "1px", background: "var(--border)", marginBottom: "16px" }} />
+                  <p style={{ fontSize: "14px", color: "var(--text-muted)", lineHeight: 1.75 }}>{member.bio}</p>
                 </div>
-                <h3 style={{ fontSize: "18px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "4px" }}>{member.name}</h3>
-                <div style={{ fontSize: "12px", fontWeight: "700", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "16px" }}>{member.role}</div>
-                <div style={{ height: "1px", background: "var(--border)", marginBottom: "16px" }} />
-                <p style={{ fontSize: "14px", color: "var(--text-muted)", lineHeight: 1.75 }}>{member.bio}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
 
       {/* ─── CTA BANNER ─── */}
       <div style={{ background: "var(--bg-elevated)", padding: "80px 24px" }}>
         <div className="container">
-          <div style={{ background: "linear-gradient(135deg, #111 0%, #1a1a1a 100%)", borderRadius: "28px", padding: "72px 40px", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.2)" }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+            style={{ background: "linear-gradient(135deg, #111 0%, #1a1a1a 100%)", borderRadius: "28px", padding: "72px 40px", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.2)" }}
+          >
             <div style={{ position: "absolute", top: "-80px", left: "-80px", width: "280px", height: "280px", background: "var(--primary)", filter: "blur(120px)", opacity: 0.12, borderRadius: "50%" }} />
             <div style={{ position: "absolute", bottom: "-80px", right: "-80px", width: "280px", height: "280px", background: "var(--primary)", filter: "blur(120px)", opacity: 0.08, borderRadius: "50%" }} />
             <div style={{ position: "relative", zIndex: 1 }}>
-              <div style={{ fontSize: "12px", fontWeight: "700", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "16px" }}>Ready to Elevate?</div>
               <h2 style={{ fontSize: "clamp(28px, 5vw, 52px)", fontWeight: "900", color: "#fff", marginBottom: "20px", lineHeight: 1.1 }}>
                 Discover the Collection
               </h2>
@@ -216,7 +228,7 @@ export default function AboutUs() {
                 Browse our full range of premium shirts, hoodies, shorts, and trousers — designed for the modern Pakistani gentleman.
               </p>
               <div style={{ display: "flex", gap: "14px", justifyContent: "center", flexWrap: "wrap" }}>
-                <Link to="/products" style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "16px 36px", borderRadius: "10px", background: "var(--primary)", color: "#000", fontWeight: "700", fontSize: "15px", textDecoration: "none", boxShadow: "0 8px 25px rgba(201,168,76,0.35)", transition: "all 0.3s ease" }}
+                <Link to="/products" style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "16px 36px", borderRadius: "10px", background: "var(--primary)", color: "#fff", fontWeight: "700", fontSize: "15px", textDecoration: "none", boxShadow: "0 8px 25px rgba(201,168,76,0.35)", transition: "all 0.3s ease" }}
                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}>
                   Shop Now
@@ -229,7 +241,7 @@ export default function AboutUs() {
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Footer from "../components/Footer";
 import api from "../api/axios";
+import { motion } from "framer-motion";
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
@@ -40,10 +41,6 @@ export default function ContactUs() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)", backgroundSize: "60px 60px", pointerEvents: "none" }} />
 
         <div style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "80px 24px 60px" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", marginBottom: "24px", padding: "7px 18px", background: "rgba(201,168,76,0.1)", backdropFilter: "blur(12px)", borderRadius: "100px", border: "1px solid rgba(201,168,76,0.3)" }}>
-            <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 10px var(--primary)" }} />
-            <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--primary)", letterSpacing: "2.5px", textTransform: "uppercase" }}>Customer Support</span>
-          </div>
           <h1 style={{ fontSize: "clamp(40px, 7vw, 80px)", fontWeight: "900", color: "#fff", lineHeight: 1.05, marginBottom: "20px" }}>
             Get in <span style={{ color: "var(--primary)" }}>Touch</span>
           </h1>
@@ -55,7 +52,13 @@ export default function ContactUs() {
 
       {/* ─── MAIN CONTENT ─── */}
       <div className="container" style={{ padding: "80px 24px 100px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "start" }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true, amount: 0.2 }} 
+          transition={{ duration: 0.6 }}
+          style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "start" }}
+        >
           
           {/* LEFT: Contact Form */}
           <div style={{ background: "var(--bg-card)", padding: "48px", borderRadius: "24px", border: "1px solid var(--border)", boxShadow: "var(--shadow-md)", position: "relative", overflow: "hidden" }}>
@@ -156,22 +159,23 @@ export default function ContactUs() {
             </div>
 
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* ─── FAQ SECTION ─── */}
       <div style={{ background: "var(--bg-elevated)", padding: "100px 0" }}>
         <div className="container" style={{ padding: "0 24px" }}>
-          <div style={{ textAlign: "center", marginBottom: "60px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
-              <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-              <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Knowledge Base</span>
-              <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true, amount: 0.2 }} 
+            transition={{ duration: 0.6 }}
+          >
+            <div style={{ textAlign: "center", marginBottom: "60px" }}>
+              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05 }}>
+                Frequently Asked <span style={{ color: "var(--primary)" }}>Questions</span>
+              </h2>
             </div>
-            <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05 }}>
-              Frequently Asked <span style={{ color: "var(--primary)" }}>Questions</span>
-            </h2>
-          </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "32px" }}>
             {[
@@ -186,6 +190,7 @@ export default function ContactUs() {
               </div>
             ))}
           </div>
+          </motion.div>
         </div>
       </div>
 

@@ -343,8 +343,18 @@ export default function ProductDetail() {
             {/* Price */}
             <div style={{ padding: "20px", background: "linear-gradient(135deg, rgba(212,163,115,0.08), rgba(212,163,115,0.03))", border: "1px solid rgba(212,163,115,0.2)", borderRadius: "14px" }}>
               <div style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px", fontWeight: "600" }}>Price</div>
-              <div style={{ fontSize: "40px", fontWeight: "900", color: "var(--primary)", lineHeight: 1 }}>
+              <div style={{ fontSize: "40px", fontWeight: "900", color: "var(--primary)", lineHeight: 1, display: "flex", alignItems: "center", gap: "12px" }}>
                 Rs. {product.price.toLocaleString()}
+                {product.discountPercentage > 0 && (
+                  <span style={{ fontSize: "20px", textDecoration: "line-through", color: "var(--text-muted)", fontWeight: "500" }}>
+                    Rs. {product.originalPrice.toLocaleString()}
+                  </span>
+                )}
+                {product.discountPercentage > 0 && (
+                  <span style={{ fontSize: "14px", background: "#e11d48", color: "#fff", padding: "4px 8px", borderRadius: "6px", fontWeight: "700" }}>
+                    -{product.discountPercentage}%
+                  </span>
+                )}
               </div>
               <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "6px" }}>
                 Cash on Delivery available

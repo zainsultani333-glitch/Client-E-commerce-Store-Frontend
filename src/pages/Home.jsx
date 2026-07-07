@@ -3,7 +3,7 @@ import api from "../api/axios";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
-
+import { motion } from "framer-motion";
 const SkeletonCard = () => (
   <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden" }}>
     <div className="skeleton" style={{ aspectRatio: "4/3" }} />
@@ -145,16 +145,19 @@ export default function Home() {
 
 
       {/* ─── TOP PICKS SECTION ─── */}
-      <div style={{ background: "var(--bg-base)", padding: "70px 0" }}>
-        <div className="container" style={{ padding: "0 24px" }}>
+      <div style={{ background: "var(--bg-base)", padding: "40px 0" }}>
+        <motion.div 
+          className="container" 
+          style={{ padding: "0 24px" }}
+          initial={{ opacity: 0, y: 30 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true, amount: 0.1 }} 
+          transition={{ duration: 0.6 }}
+        >
 
           {/* Section header */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px", flexWrap: "wrap", gap: "24px" }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
-                <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Top Picks</span>
-              </div>
               <h2 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05, margin: 0, letterSpacing: "-0.5px" }}>
                 Trending <span style={{ background: "linear-gradient(to right, #c9a84c, #e8c96e)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Now</span>
               </h2>
@@ -200,22 +203,25 @@ export default function Home() {
               </Link>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
 
 
 
       {/* ─── COLLECTIONS ─── */}
-      <div style={{ background: "var(--bg-base)", padding: "70px 0" }}>
-        <div className="container" style={{ padding: "0 24px" }}>
+      <div style={{ background: "var(--bg-base)", padding: "40px 0" }}>
+        <motion.div 
+          className="container" 
+          style={{ padding: "0 24px" }}
+          initial={{ opacity: 0, y: 30 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true, amount: 0.1 }} 
+          transition={{ duration: 0.6 }}
+        >
 
           {/* Section header */}
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "40px", flexWrap: "wrap", gap: "24px" }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
-                <div style={{ width: "32px", height: "2px", background: "var(--primary)", borderRadius: "2px" }} />
-                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--primary)", letterSpacing: "3px", textTransform: "uppercase" }}>Collections</span>
-              </div>
               <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "900", color: "var(--text-primary)", lineHeight: 1.05, margin: 0, letterSpacing: "-0.5px" }}>
                 Shop by <span style={{ background: "linear-gradient(to right, #c9a84c, #e8c96e)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Category</span>
               </h2>
@@ -290,7 +296,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
 
@@ -298,8 +304,15 @@ export default function Home() {
 
 
       {/* ─── WHY CHOOSE US ─── */}
-      <div style={{ background: "#F5F6F8", padding: "80px 0" }}>
-        <div className="container" style={{ padding: "0 24px" }}>
+      <div style={{ background: "#F5F6F8", padding: "40px 0" }}>
+        <motion.div 
+          className="container" 
+          style={{ padding: "0 24px" }}
+          initial={{ opacity: 0, y: 30 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true, amount: 0.1 }} 
+          transition={{ duration: 0.6 }}
+        >
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "50px", flexWrap: "wrap", gap: "24px" }}>
             <div>
@@ -359,12 +372,19 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* ─── TESTIMONIALS ─── */}
-      <div style={{ background: "#F5F6F8", padding: "80px 0" }}>
-        <div className="container" style={{ padding: "0 24px" }}>
+      <div style={{ background: "#F5F6F8", padding: "40px 0" }}>
+        <motion.div 
+          className="container" 
+          style={{ padding: "0 24px" }}
+          initial={{ opacity: 0, y: 30 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true, amount: 0.1 }} 
+          transition={{ duration: 0.6 }}
+        >
           
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "50px", flexWrap: "wrap", gap: "24px" }}>
             <div>
@@ -432,12 +452,19 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
 
 
       {/* ─── VIP NEWSLETTER ─── */}
-      <div className="container" style={{ padding: "70px 24px 80px" }}>
+      <motion.div 
+        className="container" 
+        style={{ padding: "40px 24px" }}
+        initial={{ opacity: 0, y: 30 }} 
+        whileInView={{ opacity: 1, y: 0 }} 
+        viewport={{ once: true, amount: 0.1 }} 
+        transition={{ duration: 0.6 }}
+      >
         <div style={{
           background: "linear-gradient(135deg, #111 0%, #222 100%)",
           borderRadius: "32px",
@@ -452,7 +479,6 @@ export default function Home() {
           <div style={{ position: "absolute", bottom: "-100px", right: "-100px", width: "300px", height: "300px", background: "#fff", filter: "blur(150px)", opacity: 0.05, borderRadius: "50%" }} />
 
           <div style={{ position: "relative", zIndex: 1, maxWidth: "600px", margin: "0 auto" }}>
-            <div style={{ color: "var(--primary)", fontSize: "12px", fontWeight: "700", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "16px" }}>The Inner Circle</div>
             <h2 style={{ fontSize: "40px", fontWeight: "900", marginBottom: "24px", fontFamily: "'Playfair Display', serif", color: "#fff" }}>Join Our Newsletter</h2>
             <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.7)", marginBottom: "40px", lineHeight: 1.6 }}>Subscribe to gain early access to new collections, exclusive VIP discounts, and style guides tailored for you.</p>
 
@@ -463,7 +489,7 @@ export default function Home() {
             <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginTop: "16px" }}>We respect your privacy. Unsubscribe at any time.</p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <Footer />
 
