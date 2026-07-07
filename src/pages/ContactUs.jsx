@@ -57,15 +57,15 @@ export default function ContactUs() {
           whileInView={{ opacity: 1, y: 0 }} 
           viewport={{ once: true, amount: 0.2 }} 
           transition={{ duration: 0.6 }}
-          style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "start" }}
+          className="contact-grid"
         >
           
           {/* LEFT: Contact Form */}
-          <div style={{ background: "var(--bg-card)", padding: "48px", borderRadius: "24px", border: "1px solid var(--border)", boxShadow: "var(--shadow-md)", position: "relative", overflow: "hidden" }}>
+          <div className="contact-form-card" style={{ background: "var(--bg-card)", borderRadius: "24px", border: "1px solid var(--border)", boxShadow: "var(--shadow-md)", position: "relative", overflow: "hidden" }}>
             {/* Top accent line */}
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "linear-gradient(90deg, var(--primary), transparent)" }} />
             
-            <h3 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "8px" }}>Send us a Message</h3>
+            <h3 style={{ fontSize: "clamp(22px, 6vw, 28px)", fontWeight: "800", color: "var(--text-primary)", marginBottom: "8px" }}>Send us a Message</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "15px", marginBottom: "32px" }}>We typically respond within 24 business hours.</p>
             
             {status.text && (
@@ -75,7 +75,7 @@ export default function ContactUs() {
             )}
             
             <form style={{ display: "flex", flexDirection: "column", gap: "20px" }} onSubmit={handleSubmit}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+              <div className="form-row">
                 <div>
                   <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>First Name</label>
                   <input type="text" placeholder="John" required value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-base)", color: "var(--text-primary)", fontSize: "15px", outline: "none", transition: "border-color 0.3s", fontFamily: "'Montserrat', sans-serif" }} onFocus={e => e.currentTarget.style.borderColor = "var(--primary)"} onBlur={e => e.currentTarget.style.borderColor = "var(--border)"} />
@@ -177,7 +177,7 @@ export default function ContactUs() {
               </h2>
             </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "32px" }}>
+          <div className="faq-grid">
             {[
               { q: "What is your return policy?", a: "We offer a 14-day return policy for all unworn, unwashed items in their original packaging with tags attached. Sale items are final." },
               { q: "How long does shipping take?", a: "Standard nationwide shipping takes 3-5 business days. Express next-day shipping is available in select major cities." },
@@ -198,8 +198,43 @@ export default function ContactUs() {
       
       <style>{`
         .hover-lift:hover { transform: translateY(-6px) !important; box-shadow: 0 16px 40px rgba(0,0,0,0.08) !important; }
-        @media (max-width: 900px) {
-          .container > div { grid-template-columns: 1fr !important; }
+        
+        .contact-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 40px;
+          align-items: start;
+        }
+        .contact-form-card {
+          padding: 24px;
+        }
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+        .faq-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        
+        @media (min-width: 640px) {
+          .contact-form-card {
+            padding: 48px;
+          }
+          .form-row {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+        @media (min-width: 900px) {
+          .contact-grid {
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+          }
+          .faq-grid {
+            grid-template-columns: 1fr 1fr;
+          }
         }
       `}</style>
     </div>

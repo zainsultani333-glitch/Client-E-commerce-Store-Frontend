@@ -3,6 +3,7 @@ import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import Footer from "../components/Footer";
 
 export default function Cart() {
   const { cart, removeFromCart, updateQty, clearCart, cartTotal, cartCount } = useContext(CartContext);
@@ -62,28 +63,35 @@ export default function Cart() {
 
   if (orderPlaced) {
     return (
-      <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px", padding: "40px 24px", textAlign: "center" }}>
+      <>
+        <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px", padding: "40px 24px", textAlign: "center" }}>
         <div style={{ fontSize: "100px", lineHeight: 1, marginBottom: "10px" }} className="animate-float">🎉</div>
         <h2 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "4px" }}>Your order is placed successfully</h2>
         <p style={{ color: "var(--text-muted)", marginBottom: "16px" }}>Thank you for shopping with us! Your order will be delivered soon.</p>
         <Link to="/" style={{ padding: "12px 32px", background: "#2F6B4C", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: "700", fontSize: "16px", transition: "var(--transition)" }}>Go Home</Link>
       </div>
-    );
-  }
+      <Footer />
+    </>
+  );
+}
 
   if (cart.length === 0) {
     return (
-      <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px", padding: "40px 24px" }}>
+      <>
+        <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px", padding: "40px 24px" }}>
         <div style={{ fontSize: "80px", lineHeight: 1 }} className="animate-float">🛒</div>
         <h2 style={{ fontSize: "24px", fontWeight: "800" }}>Your basket is empty</h2>
         <p style={{ color: "var(--text-muted)", textAlign: "center" }}>Browse our collection and add items to your basket</p>
         <Link to="/" className="btn-primary" style={{ padding: "13px 28px" }}>Continue Shopping →</Link>
       </div>
-    );
-  }
+      <Footer />
+    </>
+  );
+}
 
   return (
-    <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", padding: "40px 24px" }}>
+    <>
+      <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", padding: "40px 24px" }}>
       <div className="container" style={{ maxWidth: "1100px" }}>
 
         {/* Header */}
@@ -97,33 +105,35 @@ export default function Cart() {
           </button>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: cart.length > 0 ? "1fr 360px" : "1fr", gap: "24px", alignItems: "start" }}>
+        <div className={`cart-grid ${cart.length > 0 ? "has-items" : ""}`}>
 
           {/* ─── CART ITEMS ─── */}
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {cart.map(({ product, qty, size, color }) => (
-              <div key={`${product._id}-${size}-${color}`} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", display: "flex", gap: "16px", alignItems: "center", transition: "var(--transition)" }}>
-                {product.images && product.images.length > 0 ? (
-                  <img src={product.images[0]} alt={product.name} style={{ width: "76px", height: "76px", objectFit: "cover", borderRadius: "10px", border: "1px solid var(--border)", flexShrink: 0 }} onError={e => e.target.style.display = "none"} />
-                ) : (
-                  <div style={{ width: "76px", height: "76px", background: "var(--bg-elevated)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", flexShrink: 0 }}>👕</div>
-                )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <h3 style={{ fontSize: "15px", fontWeight: "700", margin: "0 0 4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.name}</h3>
-                  <div style={{ display: "flex", gap: "6px", marginBottom: "6px" }}>
-                    {product.category && <span className="badge badge-gold" style={{ display: "inline-block" }}>{product.category}</span>}
-                    {size && <span className="badge badge-gray" style={{ display: "inline-block" }}>Size: {size}</span>}
-                    {color && <span className="badge badge-gray" style={{ display: "inline-block" }}>Color: {color}</span>}
+              <div key={`${product._id}-${size}-${color}`} className="cart-item-row" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", transition: "var(--transition)" }}>
+                <div className="cart-item-main">
+                  {product.images && product.images.length > 0 ? (
+                    <img src={product.images[0]} alt={product.name} style={{ width: "76px", height: "76px", objectFit: "cover", borderRadius: "10px", border: "1px solid var(--border)", flexShrink: 0 }} onError={e => e.target.style.display = "none"} />
+                  ) : (
+                    <div style={{ width: "76px", height: "76px", background: "var(--bg-elevated)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", flexShrink: 0 }}>👕</div>
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{ fontSize: "15px", fontWeight: "700", margin: "0 0 4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.name}</h3>
+                    <div style={{ display: "flex", gap: "6px", marginBottom: "6px", flexWrap: "wrap" }}>
+                      {product.category && <span className="badge badge-gold" style={{ display: "inline-block" }}>{product.category}</span>}
+                      {size && <span className="badge badge-gray" style={{ display: "inline-block" }}>Size: {size}</span>}
+                      {color && <span className="badge badge-gray" style={{ display: "inline-block" }}>Color: {color}</span>}
+                    </div>
+                    <div style={{ fontSize: "17px", fontWeight: "800", color: "var(--primary)" }}>Rs. {product.price.toLocaleString()}</div>
                   </div>
-                  <div style={{ fontSize: "17px", fontWeight: "800", color: "var(--primary)" }}>Rs. {product.price.toLocaleString()}</div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "10px" }}>
+                <div className="cart-item-controls">
                   <div className="qty-control">
                     <button className="qty-btn" onClick={() => updateQty(product._id, size, color, qty - 1)}>−</button>
                     <div className="qty-value">{qty}</div>
                     <button className="qty-btn" onClick={() => updateQty(product._id, size, color, qty + 1)}>+</button>
                   </div>
-                  <div style={{ fontSize: "14px", fontWeight: "800", color: "var(--text-primary)" }}>Rs. {(product.price * qty).toLocaleString()}</div>
+                  <div style={{ fontSize: "14px", fontWeight: "800", color: "var(--text-primary)" }} className="desktop-total">Rs. {(product.price * qty).toLocaleString()}</div>
                   <button onClick={() => removeFromCart(product._id, size, color)}
                     style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "12px", transition: "var(--transition)", fontFamily: "'Montserrat',sans-serif" }}
                     onMouseEnter={e => e.target.style.color = "var(--error)"}
@@ -226,6 +236,66 @@ export default function Cart() {
           </div>
         </div>
       </div>
-    </div>
+      <style>{`
+        .cart-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 24px;
+          align-items: start;
+        }
+        @media (min-width: 900px) {
+          .cart-grid.has-items {
+            grid-template-columns: 1fr 360px;
+          }
+        }
+        
+        .cart-item-row {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .cart-item-main {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+          width: 100%;
+        }
+        .cart-item-controls {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          border-top: 1px solid var(--border);
+          padding-top: 16px;
+        }
+        .desktop-total {
+          display: none;
+        }
+        @media (min-width: 640px) {
+          .cart-item-row {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .cart-item-main {
+            width: auto;
+            flex: 1;
+          }
+          .cart-item-controls {
+            width: auto;
+            flex-direction: column;
+            align-items: flex-end;
+            border-top: none;
+            padding-top: 0;
+            gap: 10px;
+          }
+          .desktop-total {
+            display: block;
+          }
+        }
+      `}</style>
+      </div>
+      <Footer />
+    </>
   );
 }

@@ -176,7 +176,7 @@ export default function ProductDetail() {
       </div>
 
       <div className="container" style={{ padding: "48px 24px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px", alignItems: "start" }}>
+        <div className="product-detail-grid">
 
           {/* ─── LEFT: IMAGE GALLERY ─── */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -343,15 +343,15 @@ export default function ProductDetail() {
             {/* Price */}
             <div style={{ padding: "20px", background: "linear-gradient(135deg, rgba(212,163,115,0.08), rgba(212,163,115,0.03))", border: "1px solid rgba(212,163,115,0.2)", borderRadius: "14px" }}>
               <div style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px", fontWeight: "600" }}>Price</div>
-              <div style={{ fontSize: "40px", fontWeight: "900", color: "var(--primary)", lineHeight: 1, display: "flex", alignItems: "center", gap: "12px" }}>
-                Rs. {product.price.toLocaleString()}
+              <div style={{ fontSize: "clamp(32px, 8vw, 40px)", fontWeight: "900", color: "var(--primary)", lineHeight: 1, display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                <span style={{ whiteSpace: "nowrap" }}>Rs. {product.price.toLocaleString()}</span>
                 {product.discountPercentage > 0 && (
-                  <span style={{ fontSize: "20px", textDecoration: "line-through", color: "var(--text-muted)", fontWeight: "500" }}>
+                  <span style={{ fontSize: "clamp(16px, 5vw, 20px)", textDecoration: "line-through", color: "var(--text-muted)", fontWeight: "500", whiteSpace: "nowrap" }}>
                     Rs. {product.originalPrice.toLocaleString()}
                   </span>
                 )}
                 {product.discountPercentage > 0 && (
-                  <span style={{ fontSize: "14px", background: "#e11d48", color: "#fff", padding: "4px 8px", borderRadius: "6px", fontWeight: "700" }}>
+                  <span style={{ fontSize: "14px", background: "#e11d48", color: "#fff", padding: "4px 8px", borderRadius: "6px", fontWeight: "700", whiteSpace: "nowrap" }}>
                     -{product.discountPercentage}%
                   </span>
                 )}
@@ -535,11 +535,12 @@ export default function ProductDetail() {
               <div className={displayReviews.length > 3 ? "reviews-track" : ""} style={{ 
                 display: "flex", 
                 gap: "16px", 
+                flexWrap: displayReviews.length > 3 ? "nowrap" : "wrap",
                 width: displayReviews.length > 3 ? "max-content" : "100%"
               }}>
                 {loopReviews.map((rev, idx) => (
                   <div key={idx} style={{ 
-                    flex: displayReviews.length > 3 ? "0 0 320px" : "1",
+                    flex: displayReviews.length > 3 ? "0 0 320px" : "1 1 300px",
                     background: "var(--bg-card)", 
                     padding: "20px", 
                     borderRadius: "12px", 
@@ -614,7 +615,7 @@ export default function ProductDetail() {
       {relatedProducts.length > 0 && (
         <div className="container" style={{ padding: "0 24px 64px" }}>
           <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "24px", color: "var(--text-primary)", borderBottom: "1px solid var(--border)", paddingBottom: "12px" }}>More from {product.category}</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "24px" }}>
+          <div className="related-products-grid">
             {relatedProducts.map(rp => (
               <ProductCard key={rp._id} product={rp} />
             ))}
@@ -686,6 +687,30 @@ export default function ProductDetail() {
           </button>
         </div>
       )}
+
+      <style>{`
+        .product-detail-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 32px;
+          align-items: start;
+        }
+        @media (min-width: 900px) {
+          .product-detail-grid {
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 48px;
+          }
+        }
+        
+        .related-products-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+        @media (min-width: 500px) { .related-products-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 768px) { .related-products-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1024px) { .related-products-grid { grid-template-columns: repeat(4, 1fr); } }
+      `}</style>
     </div>
   );
 }

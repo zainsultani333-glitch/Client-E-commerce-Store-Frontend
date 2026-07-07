@@ -80,14 +80,14 @@ export default function AboutUs() {
       {/* ─── STATS ROW ─── */}
       <div style={{ background: "var(--bg-card)", borderBottom: "1px solid var(--border)" }}>
         <div className="container" style={{ padding: "0 24px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0" }}>
+          <div className="stats-grid">
             {[
               { value: "15+", label: "Years in Business" },
               { value: "500+", label: "Happy Customers" },
               { value: "4", label: "Core Collections" },
               { value: "100%", label: "Made with Care" },
             ].map((stat, idx) => (
-              <div key={idx} style={{ padding: "36px 24px", textAlign: "center", borderRight: idx < 3 ? "1px solid var(--border)" : "none" }}>
+              <div key={idx} className="stat-item">
                 <div style={{ fontSize: "36px", fontWeight: "900", color: "var(--primary)", lineHeight: 1 }}>{stat.value}</div>
                 <div style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "8px", fontWeight: "500" }}>{stat.label}</div>
               </div>
@@ -104,7 +104,7 @@ export default function AboutUs() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.6 }}
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}
+            className="story-grid"
           >
             {/* Image */}
             <div style={{ position: "relative" }}>
@@ -160,7 +160,7 @@ export default function AboutUs() {
               </h2>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "24px" }}>
+            <div className="values-grid">
               {values.map((v) => (
                 <div key={v.title} style={{ background: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border)", padding: "36px 32px", position: "relative", overflow: "hidden", transition: "all 0.3s ease" }} className="hover-lift">
                   <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: `linear-gradient(90deg, ${v.color}, transparent)`, borderRadius: "20px 20px 0 0" }} />
@@ -191,7 +191,7 @@ export default function AboutUs() {
               </h2>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "28px" }}>
+            <div className="team-grid">
               {team.map((member) => (
                 <div key={member.name} style={{ background: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border)", padding: "36px 32px", textAlign: "center", transition: "all 0.3s ease" }} className="hover-lift">
                   <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: `linear-gradient(135deg, ${member.color}22, ${member.color}44)`, border: `3px solid ${member.color}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", fontWeight: "900", color: member.color, margin: "0 auto 20px" }}>
@@ -249,6 +249,64 @@ export default function AboutUs() {
 
       <style>{`
         .hover-lift:hover { transform: translateY(-6px) !important; box-shadow: 0 16px 40px rgba(0,0,0,0.08) !important; border-color: rgba(201,168,76,0.25) !important; }
+        
+        .stats-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+        .stat-item {
+          padding: 36px 24px;
+          text-align: center;
+          border-bottom: 1px solid var(--border);
+        }
+        .stat-item:last-child {
+          border-bottom: none;
+        }
+        @media (min-width: 640px) {
+          .stats-grid { grid-template-columns: repeat(2, 1fr); }
+          .stat-item { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+          .stat-item:nth-child(even) { border-right: none; }
+          .stat-item:nth-child(3), .stat-item:nth-child(4) { border-bottom: none; }
+        }
+        @media (min-width: 1024px) {
+          .stats-grid { grid-template-columns: repeat(4, 1fr); }
+          .stat-item { border-bottom: none !important; border-right: 1px solid var(--border) !important; }
+          .stat-item:last-child { border-right: none !important; }
+        }
+
+        .story-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 40px;
+          align-items: center;
+        }
+        @media (min-width: 1024px) {
+          .story-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+          }
+        }
+
+        .values-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+        @media (min-width: 640px) {
+          .values-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+          .values-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .team-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+        @media (min-width: 768px) {
+          .team-grid { grid-template-columns: repeat(3, 1fr); }
+        }
       `}</style>
     </div>
   );

@@ -86,7 +86,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Nav */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="desktop-nav" style={{ alignItems: "center", gap: "8px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "4px", background: "var(--bg-card)", padding: "4px 8px", borderRadius: "100px", border: "1px solid var(--border)", marginRight: "16px" }}>
                 {navLink("/", "Home")}
                 {navLink("/products", "Products")}
@@ -165,13 +165,91 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+
+            {/* Mobile Menu Toggle */}
+            <div className="mobile-toggle" style={{ alignItems: "center" }}>
+              {user && !isAdmin && (
+                <Link to="/cart" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "40px", height: "40px", borderRadius: "50%", background: "var(--bg-card)", border: "1px solid var(--border)", textDecoration: "none", transition: "all 0.3s", marginRight: "12px" }}>
+                  <svg style={{ width: "20px", height: "20px", color: cartCount > 0 ? "var(--primary)" : "var(--text-secondary)" }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  {cartCount > 0 && (
+                    <span style={{ position: "absolute", top: "-2px", right: "-2px", minWidth: "18px", height: "18px", background: "var(--primary)", color: "#fff", borderRadius: "50%", fontSize: "10px", fontWeight: "800", display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
+                  )}
+                </Link>
+              )}
+              <button 
+                onClick={() => setMenuOpen(!menuOpen)}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-primary)", display: "flex", alignItems: "center", justifyContent: "center", padding: "8px" }}
+              >
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  {menuOpen ? (
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  ) : (
+                    <path d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div className="mobile-menu" style={{ background: "var(--bg-card)", borderTop: "1px solid var(--border)", padding: "16px 24px", flexDirection: "column", gap: "16px", boxShadow: "0 10px 20px rgba(0,0,0,0.05)" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {navLink("/", "Home")}
+              {navLink("/products", "Products")}
+              {navLink("/about", "About Us")}
+              {navLink("/contact", "Contact Us")}
+              {isAdmin && navLink("/admin", "Admin")}
+            </div>
+
+            {!user ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "8px", borderTop: "1px solid var(--border)", paddingTop: "16px" }}>
+                <Link to="/login" onClick={() => setMenuOpen(false)} style={{ padding: "12px", borderRadius: "10px", fontSize: "14px", fontWeight: "600", color: "var(--text-primary)", textDecoration: "none", textAlign: "center", border: "1px solid var(--border)" }}>Sign In</Link>
+                <Link to="/register" onClick={() => setMenuOpen(false)} style={{ padding: "12px", borderRadius: "10px", fontSize: "14px", fontWeight: "700", color: "#fff", textDecoration: "none", textAlign: "center", background: "var(--primary)" }}>Register</Link>
+              </div>
+            ) : (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "8px", borderTop: "1px solid var(--border)", paddingTop: "16px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div style={{ width: "40px", height: "40px", background: "var(--primary)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: "800", color: "#fff" }}>
+                    {user.name?.[0]?.toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)" }}>{user.name}</div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: "600", textTransform: "uppercase" }}>{isAdmin ? "Admin" : "Member"}</div>
+                  </div>
+                </div>
+                <button onClick={handleLogout} style={{ padding: "8px 16px", borderRadius: "10px", background: "rgba(239, 68, 68, 0.1)", color: "var(--error)", border: "none", fontWeight: "600", cursor: "pointer" }}>Logout</button>
+              </div>
+            )}
+          </div>
+        )}
       </nav>
       <style>
         {`
           .nav-link-custom:hover {
             color: var(--primary) !important;
+          }
+          
+          .desktop-nav {
+            display: none !important;
+          }
+          .mobile-toggle {
+            display: flex !important;
+          }
+          .mobile-menu {
+            display: flex !important;
+          }
+          
+          @media (min-width: 1024px) {
+            .desktop-nav {
+              display: flex !important;
+            }
+            .mobile-toggle, .mobile-menu {
+              display: none !important;
+            }
           }
         `}
       </style>

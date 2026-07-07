@@ -57,11 +57,11 @@ export default function Home() {
       {/* ─── HERO BANNER ─── */}
       <div style={{ position: "relative", minHeight: "85vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", backgroundColor: "#C2E8CE" }}>
         <div className="container" style={{ padding: "0 24px", width: "100%" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "center" }}>
+          <div className="hero-grid" style={{ alignItems: "center" }}>
 
             {/* ── LEFT: TEXT ── */}
-            <div style={{ paddingRight: "40px", animation: "fadeUp 0.9s ease-out" }}>
-              <h1 style={{ fontSize: "clamp(48px, 6vw, 72px)", fontWeight: "700", fontFamily: "'Playfair Display', serif", color: "#1F4529", lineHeight: 1.1, marginBottom: "24px", letterSpacing: "-1px" }}>
+            <div className="hero-text" style={{ animation: "fadeUp 0.9s ease-out" }}>
+              <h1 className="hero-title" style={{ fontWeight: "700", fontFamily: "'Playfair Display', serif", color: "#1F4529", lineHeight: 1.1, marginBottom: "24px", letterSpacing: "-1px" }}>
                 Discover and<br />
                 Find Your Own<br />
                 Fashion!
@@ -80,7 +80,7 @@ export default function Home() {
             </div>
 
             {/* ── RIGHT: IMAGE & SHAPES ── */}
-            <div style={{ position: "relative", height: "600px", display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeUp 1.1s ease-out" }}>
+            <div className="hero-image" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeUp 1.1s ease-out" }}>
               {/* Background Shape */}
               <div style={{ position: "absolute", top: "5%", right: "5%", width: "80%", height: "90%", backgroundColor: "#6BBE82", borderRadius: "80px 180px 80px 80px" }} />
 
@@ -178,7 +178,7 @@ export default function Home() {
 
           {/* Product grid */}
           {loading ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "28px" }}>
+            <div className="product-grid">
               {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
             </div>
           ) : latestProducts.length === 0 ? (
@@ -187,7 +187,7 @@ export default function Home() {
               <p style={{ fontSize: "16px" }}>No products available yet.</p>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "28px" }}>
+            <div className="product-grid">
               {latestProducts.slice(0, 4).map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
@@ -237,10 +237,10 @@ export default function Home() {
           </div>
 
           {/* Bento grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "280px 280px", gap: "20px" }}>
+          <div className="bento-grid">
 
             {/* Large feature card — Shirts */}
-            <Link to="/products" className="category-card" style={{ gridRow: "1 / 3", position: "relative", borderRadius: "24px", overflow: "hidden", display: "block", textDecoration: "none", boxShadow: "var(--shadow-md)" }}>
+            <Link to="/products" className="category-card bento-large-card" style={{ position: "relative", borderRadius: "24px", overflow: "hidden", display: "block", textDecoration: "none", boxShadow: "var(--shadow-md)" }}>
               <img src="https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?q=80&w=900&auto=format&fit=crop" alt="Shirts" style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)" }} className="hover-scale" />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 55%)", transition: "opacity 0.3s" }} className="hover-overlay" />
               {/* Top badge */}
@@ -269,7 +269,7 @@ export default function Home() {
             </Link>
 
             {/* Bottom right — split into 2 */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+            <div className="bento-split-grid">
 
               {/* Shorts */}
               <Link to="/products" className="category-card" style={{ position: "relative", borderRadius: "20px", overflow: "hidden", display: "block", textDecoration: "none", boxShadow: "var(--shadow-md)" }}>
@@ -332,7 +332,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
+          <div className="four-col-grid">
             {[
               {
                 title: "Ethical Production",
@@ -406,7 +406,7 @@ export default function Home() {
           </div>
 
           {/* Testimonial grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
+          <div className="four-col-grid">
             {[
               { text: "The fit is absolutely perfect. I've completely replaced my wardrobe with their shirts. Highly recommended for anyone looking for quality.", author: "Ahmed Khan", role: "Verified Buyer", product: "Premium Shirts", initial: "A", color: "#3b82f6" },
               { text: "Fast delivery, elegant packaging, and the trousers are unbelievably comfortable. It's rare to find this level of craftsmanship nowadays.", author: "Usman Ali", role: "Verified Buyer", product: "Classic Trousers", initial: "U", color: "#a855f7" },
@@ -465,10 +465,8 @@ export default function Home() {
         viewport={{ once: true, amount: 0.1 }} 
         transition={{ duration: 0.6 }}
       >
-        <div style={{
+        <div className="newsletter-box" style={{
           background: "linear-gradient(135deg, #111 0%, #222 100%)",
-          borderRadius: "32px",
-          padding: "80px 24px",
           textAlign: "center",
           position: "relative",
           overflow: "hidden",
@@ -479,12 +477,12 @@ export default function Home() {
           <div style={{ position: "absolute", bottom: "-100px", right: "-100px", width: "300px", height: "300px", background: "#fff", filter: "blur(150px)", opacity: 0.05, borderRadius: "50%" }} />
 
           <div style={{ position: "relative", zIndex: 1, maxWidth: "600px", margin: "0 auto" }}>
-            <h2 style={{ fontSize: "40px", fontWeight: "900", marginBottom: "24px", fontFamily: "'Playfair Display', serif", color: "#fff" }}>Join Our Newsletter</h2>
+            <h2 className="newsletter-title" style={{ fontWeight: "900", marginBottom: "24px", fontFamily: "'Playfair Display', serif", color: "#fff" }}>Join Our Newsletter</h2>
             <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.7)", marginBottom: "40px", lineHeight: 1.6 }}>Subscribe to gain early access to new collections, exclusive VIP discounts, and style guides tailored for you.</p>
 
-            <form onSubmit={e => e.preventDefault()} style={{ display: "flex", gap: "12px", maxWidth: "480px", margin: "0 auto", flexWrap: "wrap" }}>
+            <form onSubmit={e => e.preventDefault()} className="newsletter-form">
               <input type="email" placeholder="Enter your email address" style={{ flex: 1, minWidth: "250px", padding: "18px 24px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.05)", color: "#fff", fontSize: "15px", outline: "none", backdropFilter: "blur(10px)" }} required />
-              <button type="submit" className="btn-primary" style={{ padding: "18px 36px", borderRadius: "12px", fontSize: "15px", fontWeight: "700", letterSpacing: "1px", textTransform: "uppercase" }}>Subscribe</button>
+              <button type="submit" className="btn-primary newsletter-btn" style={{ padding: "18px 36px", borderRadius: "12px", fontSize: "15px", fontWeight: "700", letterSpacing: "1px", textTransform: "uppercase" }}>Subscribe</button>
             </form>
             <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginTop: "16px" }}>We respect your privacy. Unsubscribe at any time.</p>
           </div>
@@ -511,6 +509,144 @@ export default function Home() {
           .category-card:hover .hover-overlay { opacity: 1 !important; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 60%) !important; }
           .category-card:hover .cat-arrow { background: var(--primary) !important; color: var(--bg-base) !important; transform: translateX(5px); }
           .hover-lift:hover { transform: translateY(-8px) !important; box-shadow: 0 20px 40px rgba(0,0,0,0.08) !important; border-color: rgba(201,168,76,0.3) !important; }
+          
+          /* Hero Section Responsive */
+          .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+          }
+          .hero-text {
+            padding-right: 0px;
+          }
+          .hero-title {
+            font-size: clamp(40px, 10vw, 72px);
+          }
+          .hero-image {
+            height: 400px;
+            width: 100%;
+          }
+          
+          @media (min-width: 768px) {
+            .hero-image {
+              height: 500px;
+            }
+          }
+          
+          @media (min-width: 1024px) {
+            .hero-grid {
+              grid-template-columns: 1fr 1fr;
+              gap: 60px;
+            }
+            .hero-text {
+              padding-right: 40px;
+            }
+            .hero-title {
+              font-size: clamp(48px, 6vw, 72px);
+            }
+            .hero-image {
+              height: 600px;
+            }
+          }
+          
+          /* Product Grid Responsive */
+          .product-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+          }
+          @media (min-width: 640px) {
+            .product-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+          @media (min-width: 1024px) {
+            .product-grid {
+              grid-template-columns: repeat(4, 1fr);
+              gap: 28px;
+            }
+          }
+          
+          /* Bento Grid Responsive */
+          .bento-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-auto-rows: 280px;
+            gap: 20px;
+          }
+          .bento-large-card {
+            grid-row: auto;
+          }
+          .bento-split-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            grid-row: span 2;
+          }
+          @media (min-width: 768px) {
+            .bento-grid {
+              grid-template-columns: 1fr 1fr;
+              grid-template-rows: 280px 280px;
+            }
+            .bento-large-card {
+              grid-row: 1 / 3;
+            }
+            .bento-split-grid {
+              grid-template-columns: 1fr 1fr;
+              grid-row: auto;
+            }
+          }
+          
+          /* Four Column Grid Responsive (Why Choose Us, etc) */
+          .four-col-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+          @media (min-width: 640px) {
+            .four-col-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+          @media (min-width: 1024px) {
+            .four-col-grid {
+              grid-template-columns: repeat(4, 1fr);
+            }
+          }
+          
+          /* Newsletter Responsive */
+          .newsletter-box {
+            padding: 40px 24px;
+            border-radius: 20px;
+          }
+          .newsletter-title {
+            font-size: 28px;
+          }
+          .newsletter-form {
+            display: flex;
+            gap: 12px;
+            max-width: 480px;
+            margin: 0 auto;
+            flex-direction: column;
+          }
+          .newsletter-btn {
+            width: 100%;
+          }
+          @media (min-width: 640px) {
+            .newsletter-box {
+              padding: 80px 24px;
+              border-radius: 32px;
+            }
+            .newsletter-title {
+              font-size: 40px;
+            }
+            .newsletter-form {
+              flex-direction: row;
+            }
+            .newsletter-btn {
+              width: auto;
+            }
+          }
         `}
       </style>
     </div>

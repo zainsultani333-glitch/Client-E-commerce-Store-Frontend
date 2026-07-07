@@ -70,7 +70,6 @@ export default function Products() {
 
       {/* ─── CATEGORY PILLS ─── */}
       <div style={{
-        position: "sticky", top: "72px", zIndex: 50,
         background: "rgba(250,249,246,0.95)",
         backdropFilter: "blur(12px)",
         borderBottom: "1px solid var(--border)",
@@ -153,7 +152,7 @@ export default function Products() {
 
         {/* Grid */}
         {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
+          <div className="products-grid">
             {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : sorted.length === 0 ? (
@@ -174,7 +173,7 @@ export default function Products() {
             </button>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
+          <div className="products-grid">
             {sorted.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
@@ -183,6 +182,31 @@ export default function Products() {
       </div>
 
       <Footer />
+      
+      <style>
+        {`
+          .products-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+          }
+          @media (min-width: 640px) {
+            .products-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+          @media (min-width: 1024px) {
+            .products-grid {
+              grid-template-columns: repeat(3, 1fr);
+            }
+          }
+          @media (min-width: 1280px) {
+            .products-grid {
+              grid-template-columns: repeat(4, 1fr);
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }

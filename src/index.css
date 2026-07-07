@@ -612,7 +612,13 @@ label {
   justify-content: center;
   min-height: calc(100vh - 72px);
   background: linear-gradient(to bottom, var(--primary) 0%, var(--primary) 50%, var(--bg-base) 50%, var(--bg-base) 100%);
-  padding: 40px 20px;
+  padding: 24px 16px;
+}
+
+@media (min-width: 640px) {
+  .auth-layout {
+    padding: 40px 20px;
+  }
 }
 
 .auth-container {
@@ -620,19 +626,31 @@ label {
   flex-direction: row;
   width: 100%;
   max-width: 1000px;
-  min-height: 600px;
+  min-height: auto;
   background: var(--bg-card);
   border-radius: 24px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 
+@media (min-width: 900px) {
+  .auth-container {
+    min-height: 600px;
+  }
+}
+
 .auth-form-side {
   flex: 1;
-  padding: 60px 40px;
+  padding: 40px 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .auth-form-side {
+    padding: 60px 40px;
+  }
 }
 
 .auth-image-side {
