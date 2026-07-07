@@ -39,37 +39,38 @@ export default function ProductCard({ product }) {
         className="product-card-hover"
         onClick={() => navigate(`/product/${product._id}`)}
         style={{
-          background: "#ffffff",
-          borderRadius: "0px", // Sharp edges for a more editorial/professional fashion look, or subtle 4px. Let's use 8px
-          overflow: "hidden",
+          background: "var(--bg-card)",
+          borderRadius: "16px",
+          padding: "16px",
           display: "flex",
           flexDirection: "column",
           cursor: "pointer",
           transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           height: "100%",
-          border: "1px solid #f0f0f0"
+          boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+          border: "1px solid rgba(0,0,0,0.05)"
         }}
         onMouseEnter={e => {
           e.currentTarget.style.transform = "translateY(-4px)";
-          e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.06)";
+          e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.08)";
           const img = e.currentTarget.querySelector('img');
           if (img) img.style.transform = "scale(1.05)";
         }}
         onMouseLeave={e => {
           e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,0.02)";
           const img = e.currentTarget.querySelector('img');
           if (img) img.style.transform = "scale(1)";
         }}
       >
         {/* Image Container */}
-        <div style={{ position: "relative", aspectRatio: "1/1", overflow: "hidden", background: "#f9f9f9", padding: "16px" }}>
+        <div style={{ position: "relative", aspectRatio: "4/5", overflow: "hidden", background: "#f4f3ef", borderRadius: "12px" }}>
           {!imgError && product.images && product.images.length > 0 ? (
             <img
               src={product.images[0]}
               alt={product.name}
               onError={() => setImgError(true)}
-              style={{ width: "100%", height: "100%", objectFit: "contain", transition: "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)" }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)" }}
             />
           ) : (
             <div style={{
@@ -80,85 +81,110 @@ export default function ProductCard({ product }) {
             </div>
           )}
 
-          {/* Top Left Tags */}
+          {/* Top Tags */}
           <div style={{ position: "absolute", top: "12px", left: "12px", display: "flex", flexDirection: "column", gap: "6px" }}>
             {isOutOfStock ? (
               <span style={{ background: "#000", color: "#fff", fontSize: "11px", padding: "4px 10px", fontWeight: "600", borderRadius: "4px" }}>Sold out</span>
             ) : isSale ? (
-              <span style={{ background: "#e11d48", color: "#fff", fontSize: "11px", padding: "4px 10px", fontWeight: "700", borderRadius: "4px", border: "none", boxShadow: "0 2px 10px rgba(225,29,72,0.3)" }}>
+              <span style={{ background: "#e11d48", color: "#fff", fontSize: "11px", padding: "4px 10px", fontWeight: "700", borderRadius: "4px" }}>
                 {product.discountPercentage ? `-${product.discountPercentage}% OFF` : 'Sale'}
               </span>
             ) : null}
           </div>
+
+          {/* Heart Button */}
+          <button style={{ 
+            position: "absolute", top: "12px", right: "12px", 
+            width: "36px", height: "36px", background: "#fff", borderRadius: "50%", 
+            display: "flex", alignItems: "center", justifyContent: "center", 
+            border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            color: "var(--text-primary)", transition: "all 0.2s"
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = "#e11d48"}
+          onMouseLeave={e => e.currentTarget.style.color = "var(--text-primary)"}
+          onClick={(e) => { e.stopPropagation(); /* Wishlist logic placeholder */ }}
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+          </button>
         </div>
 
         {/* Content */}
-        <div style={{ padding: "20px", display: "flex", flexDirection: "column", flex: 1 }}>
+        <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", flex: 1 }}>
           <h3 style={{
-            fontSize: "15px", fontWeight: "600",
-            color: "#111",
-            margin: "0 0 6px 0",
-            lineHeight: "1.3",
-            letterSpacing: "-0.2px"
+            fontSize: "19px", fontWeight: "600", fontFamily: "'Playfair Display', serif",
+            color: "var(--text-primary)", margin: "0 0 4px 0",
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
           }}>
             {product.name}
           </h3>
 
           <p style={{
-            fontSize: "13px", color: "#666",
-            margin: "0 0 20px 0",
-            lineHeight: "1.5",
-            flex: 1,
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden"
+            fontSize: "13px", color: "var(--text-muted)", margin: "0 0 16px 0"
           }}>
-            {product.description || `Premium quality ${product.category?.toLowerCase() || 'product'} designed for maximum comfort.`}
+            {product.category || 'Apparel'}
           </p>
 
-          {/* Bottom Row (Price & Button) */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ fontSize: "15px", fontWeight: "700", color: "#111" }}>
-                  Rs. {product.price.toLocaleString()}
-                </span>
-                {isSale && (
-                  <span style={{ fontSize: "13px", color: "#999", textDecoration: "line-through" }}>
-                    Rs. {product.originalPrice.toLocaleString()}
-                  </span>
-                )}
-              </div>
-
-              {product.reviews && product.reviews.length > 0 && (
-                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                  <svg width="12" height="12" fill="#111" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" /></svg>
-                  <span style={{ fontSize: "12px", fontWeight: "600", color: "#111" }}>{averageRating}</span>
-                </div>
-              )}
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: "12px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
+              <svg width="12" height="12" fill="#1a3622" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" /></svg>
+              <span style={{ fontWeight: "600", color: "#111" }}>{averageRating > 0 ? averageRating : '0.0'}</span>
+              <span style={{ color: "#d1d1d1" }}>|</span>
+              <span>{product.reviews?.length || 0} reviews</span>
             </div>
+            {product.colors && product.colors.length > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
+                <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: product.colors[0], border: "1px solid rgba(0,0,0,0.1)" }} />
+                <span>{product.colors[0]}</span>
+              </div>
+            )}
+            {(!product.colors || product.colors.length === 0) && (
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
+                <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#e0d2c3", border: "1px solid rgba(0,0,0,0.1)" }} />
+                <span>Beige</span>
+              </div>
+            )}
+          </div>
+
+          {/* Sizes */}
+          <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
+            {(product.sizes && product.sizes.length > 0 ? product.sizes : ['S', 'M', 'L', 'XL']).slice(0,4).map(size => (
+              <div key={size} style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: "4px", padding: "4px 10px", fontSize: "11px", fontWeight: "500", color: "var(--text-primary)", background: "#fff" }}>
+                {size}
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom Row */}
+          <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <h4 style={{ fontSize: "22px", fontWeight: "700", fontFamily: "'Playfair Display', serif", color: "var(--text-primary)", margin: 0, display: "flex", alignItems: "baseline", gap: "8px" }}>
+              Rs. {product.price.toLocaleString()}
+              {isSale && (
+                <span style={{ fontSize: "14px", color: "var(--text-muted)", textDecoration: "line-through", fontWeight: "500", fontFamily: "'Montserrat', sans-serif" }}>
+                  Rs. {product.originalPrice.toLocaleString()}
+                </span>
+              )}
+            </h4>
 
             <button
               onClick={handleChooseOptions}
               disabled={isOutOfStock}
               style={{
                 width: "100%",
-                background: "transparent",
-                color: "#111",
-                border: "1px solid #111",
+                background: "#1a3622",
+                color: "#fff",
+                border: "none",
                 fontSize: "13px",
                 fontWeight: "600",
-                letterSpacing: "0.5px",
+                letterSpacing: "1px",
                 textTransform: "uppercase",
                 cursor: isOutOfStock ? "not-allowed" : "pointer",
-                padding: "10px 0",
-                borderRadius: "4px",
+                padding: "14px 0",
+                borderRadius: "6px",
                 transition: "all 0.3s ease",
-                opacity: isOutOfStock ? 0.4 : 1
+                opacity: isOutOfStock ? 0.6 : 1
               }}
-              onMouseEnter={e => { if (!isOutOfStock) { e.target.style.background = "#111"; e.target.style.color = "#fff"; } }}
-              onMouseLeave={e => { if (!isOutOfStock) { e.target.style.background = "transparent"; e.target.style.color = "#111"; } }}
+              onMouseEnter={e => { if (!isOutOfStock) { e.target.style.background = "#2a5235"; } }}
+              onMouseLeave={e => { if (!isOutOfStock) { e.target.style.background = "#1a3622"; } }}
             >
               {isOutOfStock ? "Out of Stock" : "Quick View"}
             </button>
