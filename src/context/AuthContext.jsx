@@ -34,6 +34,7 @@ export default function AuthProvider({ children }) {
     setUser(data.user);
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
+    sessionStorage.setItem("justLoggedIn", "true");
   };
 
   const logout = () => {

@@ -14,4 +14,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      sessionStorage.removeItem("cart");
+      // Instead of forcing to /login, just reload the page.
+      // This turns them into a guest instantly while keeping them on the same page.
+      window.location.reload();
+    }
+    return Promise.reject(error);
+  }
+);
+
+
 export default api;

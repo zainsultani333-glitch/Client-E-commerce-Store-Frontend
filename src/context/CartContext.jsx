@@ -23,9 +23,10 @@ export default function CartProvider({ children }) {
     if (user && user.role !== "admin") {
       api.get("/cart").then(res => {
         const backendCart = res.data.items || [];
+        const justLoggedIn = sessionStorage.getItem("justLoggedIn") === "true";
         
-        // Merge with local cart if local cart has items
-        if (cart.length > 0) {
+        // Merge with local cart ONLY if we just logged in
+        if (justLoggedIn && cart.length > 0) {
           const merged = [...backendCart];
           let changed = false;
           for (const localItem of cart) {
@@ -39,6 +40,7 @@ export default function CartProvider({ children }) {
             }
           }
           setCart(merged);
+          sessionStorage.removeItem("justLoggedIn");
         } else {
           setCart(backendCart);
         }
