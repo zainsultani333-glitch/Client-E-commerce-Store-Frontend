@@ -18,20 +18,18 @@ export default function QuickViewModal({ product, onClose }) {
 
   const handleAddToCart = () => {
     if (!user) { navigate("/login"); return; }
-    // You could pass quantity and size to addToCart if the context supports it.
-    // For now, we'll just call the standard addToCart
     addToCart(product);
     setAdded(true);
     setTimeout(() => {
       setAdded(false);
-      onClose(); // Auto close after adding
+      onClose();
     }, 1500);
   };
 
   const handleBuyNow = () => {
     if (!user) { navigate("/login"); return; }
     addToCart(product);
-    navigate("/cart"); // Or checkout if you have a direct checkout route
+    navigate("/cart");
   };
 
   const isLowStock = product.quantity > 0 && product.quantity <= 5;
@@ -40,45 +38,16 @@ export default function QuickViewModal({ product, onClose }) {
   return (
     <div 
       onClick={onClose}
-      style={{
-        position: "fixed",
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.4)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-        padding: "20px"
-      }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4 sm:p-6"
     >
       <div 
         onClick={handleModalClick}
-        style={{
-          background: "#fff",
-          width: "100%",
-          maxWidth: "900px",
-          display: "flex",
-          position: "relative",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-          maxHeight: "90vh",
-          overflowY: "auto"
-        }}
+        className="bg-white rounded-[16px] w-full max-w-[900px] flex flex-col md:flex-row relative shadow-2xl overflow-y-auto max-h-[95vh] p-4 gap-6"
       >
         {/* Close button */}
         <button 
           onClick={onClose}
-          style={{
-            position: "absolute",
-            top: "16px", right: "16px",
-            background: "transparent",
-            border: "1px solid #e5e7eb",
-            borderRadius: "50%",
-            width: "36px", height: "36px",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer",
-            color: "#6b7280",
-            zIndex: 10
-          }}
+          className="absolute top-4 right-4 bg-white border border-gray-200 rounded-full w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors z-10"
         >
           <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -86,84 +55,85 @@ export default function QuickViewModal({ product, onClose }) {
         </button>
 
         {/* Left: Image */}
-        <div style={{ flex: 1, padding: "24px", display: "flex", alignItems: "center", justifyContent: "center", background: "#f9fafb" }}>
+        <div className="w-full md:w-1/2 relative bg-[#F5F4F0] rounded-[12px] overflow-hidden flex items-center justify-center min-h-[400px]">
           {product.images && product.images.length > 0 ? (
-            <img 
-              src={product.images[0]} 
-              alt={product.name} 
-              style={{ width: "100%", height: "auto", maxHeight: "70vh", objectFit: "contain" }}
-            />
+            <>
+              <img 
+                src={product.images[0]} 
+                alt={product.name} 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-4 left-4 bg-white text-[11px] font-medium px-3 py-1.5 rounded-full shadow-sm text-gray-800">
+                1 / {product.images.length}
+              </div>
+            </>
           ) : (
-            <div style={{ color: "#9ca3af", fontSize: "14px" }}>No Image</div>
+            <div className="text-gray-400 text-sm">No Image</div>
           )}
         </div>
 
         {/* Right: Details */}
-        <div style={{ flex: 1, padding: "40px", display: "flex", flexDirection: "column" }}>
+        <div className="w-full md:w-1/2 flex flex-col pt-2 md:pt-4 pr-4">
           
-          <div style={{ fontSize: "10px", color: "#6b7280", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" }}>
-            {product.category || "IRAADAY"}
+          <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">
+            {product.category || "SHIRTS"}
           </div>
           
-          <h2 style={{ fontSize: "28px", fontWeight: "700", textTransform: "uppercase", margin: "0 0 16px 0", lineHeight: 1.1, color: "#111827" }}>
+          <h2 className="text-[32px] md:text-[38px] font-serif text-gray-900 mb-2 tracking-tight capitalize leading-tight">
             {product.name}
           </h2>
 
-          <div style={{ fontSize: "16px", fontWeight: "400", color: "#111827", marginBottom: "8px", display: "flex", gap: "8px", alignItems: "center" }}>
+          <div className="text-[20px] text-gray-900 mb-2 flex items-center gap-3">
             {product.originalPrice && product.originalPrice > product.price && (
-               <span style={{ textDecoration: "line-through", color: "#9ca3af" }}>
-                 Rs.{product.originalPrice.toLocaleString()} PKR
+               <span className="line-through text-gray-400 text-lg">
+                 Rs. {product.originalPrice.toLocaleString()} PKR
                </span>
             )}
-            <span>Rs.{product.price.toLocaleString()} PKR</span>
+            <span>Rs. {product.price.toLocaleString()} PKR</span>
             {product.discountPercentage > 0 && (
-              <span style={{ fontSize: "12px", background: "#e11d48", color: "#fff", padding: "2px 6px", borderRadius: "4px", fontWeight: "700" }}>
+              <span className="text-xs bg-red-600 text-white px-2 py-1 rounded-md font-bold">
                 -{product.discountPercentage}%
               </span>
             )}
           </div>
 
-          <p style={{ fontSize: "12px", color: "#6b7280", margin: "0 0 16px 0" }}>
-            <a href="#" style={{ color: "#4b5563", textDecoration: "underline" }}>Shipping</a> calculated at checkout.
+          <p className="text-[13px] text-gray-500 mb-4">
+            <a href="#" className="underline underline-offset-2 decoration-gray-300 hover:text-gray-800 transition-colors">Shipping</a> calculated at checkout.
           </p>
 
-          {isOutOfStock ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#dc2626", marginBottom: "24px" }}>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#dc2626" }}></span>
-              Out of stock
-            </div>
-          ) : isLowStock ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#d97706", marginBottom: "24px" }}>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#d97706" }}></span>
-              Low stock
-            </div>
-          ) : (
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#16a34a", marginBottom: "24px" }}>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#16a34a" }}></span>
-              In stock
-            </div>
-          )}
+          <div className="mb-5">
+            {isOutOfStock ? (
+              <div className="flex items-center gap-1.5 text-[13px] text-red-600 font-medium">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#dc2626" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" stroke="none"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                Out of stock
+              </div>
+            ) : isLowStock ? (
+              <div className="flex items-center gap-1.5 text-[13px] text-amber-600 font-medium">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#d97706" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" stroke="none"/><path d="M12 8v4M12 16h.01"/></svg>
+                Low stock
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 text-[13px] text-[#15803d] font-medium">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#15803d" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" stroke="none"/><path d="m9 12 2 2 4-4"/></svg>
+                In stock
+              </div>
+            )}
+          </div>
 
           {/* Sizes */}
           {product.sizes && product.sizes.length > 0 && (
-            <div style={{ marginBottom: "24px" }}>
-              <div style={{ fontSize: "12px", color: "#374151", marginBottom: "8px" }}>Size</div>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <div className="mb-5">
+              <div className="text-[13px] text-gray-900 mb-2">Size</div>
+              <div className="flex gap-2 flex-wrap">
                 {product.sizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    style={{
-                      padding: "8px 16px",
-                      background: selectedSize === size ? "#000" : "#fff",
-                      color: selectedSize === size ? "#fff" : "#111827",
-                      border: "1px solid #d1d5db",
-                      fontSize: "13px",
-                      cursor: "pointer",
-                      minWidth: "60px",
-                      textAlign: "center",
-                      transition: "all 0.2s"
-                    }}
+                    className={`w-[60px] h-9 rounded-md border text-[13px] font-medium transition-all ${
+                      selectedSize === size 
+                        ? "bg-[#092218] border-[#092218] text-white" 
+                        : "bg-white border-gray-300 text-gray-900 hover:border-gray-400"
+                    }`}
                   >
                     {size}
                   </button>
@@ -174,26 +144,24 @@ export default function QuickViewModal({ product, onClose }) {
 
           {/* Colors */}
           {product.colors && product.colors.length > 0 && (
-            <div style={{ marginBottom: "24px" }}>
-              <div style={{ fontSize: "12px", color: "#374151", marginBottom: "8px" }}>Color</div>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <div className="mb-5">
+              <div className="text-[13px] text-gray-900 mb-2">Color</div>
+              <div className="flex gap-3 flex-wrap">
                 {product.colors.map((color) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    style={{
-                      padding: "8px 16px",
-                      background: selectedColor === color ? "#000" : "#fff",
-                      color: selectedColor === color ? "#fff" : "#111827",
-                      border: "1px solid #d1d5db",
-                      fontSize: "13px",
-                      cursor: "pointer",
-                      minWidth: "60px",
-                      textAlign: "center",
-                      transition: "all 0.2s"
-                    }}
+                    className={`px-4 py-2 min-w-[100px] h-10 rounded-md border flex items-center justify-center gap-3 text-[13px] font-medium transition-all ${
+                      selectedColor === color 
+                        ? "bg-[#092218] border-[#092218] text-white" 
+                        : "bg-white border-gray-300 text-gray-900 hover:border-gray-400"
+                    }`}
                   >
-                    {color}
+                    <span 
+                      className={`w-4 h-4 shrink-0 rounded-full border ${selectedColor === color ? 'border-white/50' : 'border-gray-200'}`}
+                      style={{ backgroundColor: color.toLowerCase() }} 
+                    />
+                    <span className="capitalize">{color}</span>
                   </button>
                 ))}
               </div>
@@ -201,62 +169,90 @@ export default function QuickViewModal({ product, onClose }) {
           )}
 
           {/* Quantity */}
-          <div style={{ marginBottom: "32px" }}>
-            <div style={{ fontSize: "12px", color: "#374151", marginBottom: "8px" }}>Quantity</div>
-            <div style={{ display: "flex", alignItems: "center", border: "1px solid #d1d5db", width: "fit-content" }}>
+          <div className="mb-6">
+            <div className="text-[13px] text-gray-900 mb-2">Quantity</div>
+            <div className="flex items-center border border-gray-300 rounded-md w-[110px] h-9 bg-white">
               <button 
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                style={{ padding: "10px 16px", background: "transparent", border: "none", cursor: "pointer", fontSize: "16px", color: "#4b5563" }}
-              >-</button>
-              <span style={{ padding: "0 16px", fontSize: "14px", minWidth: "20px", textAlign: "center" }}>{quantity}</span>
+                className="flex-1 h-full flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"/></svg>
+              </button>
+              <span className="flex-1 text-center text-[13px] font-medium">{quantity}</span>
               <button 
                 onClick={() => setQuantity(quantity + 1)}
-                style={{ padding: "10px 16px", background: "transparent", border: "none", cursor: "pointer", fontSize: "16px", color: "#4b5563" }}
-              >+</button>
+                className="flex-1 h-full flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5v14"/></svg>
+              </button>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
+          <div className="flex flex-col gap-2.5 mb-6">
             <button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              style={{
-                padding: "14px",
-                background: added ? "#16a34a" : "transparent",
-                color: added ? "#fff" : "#111827",
-                border: added ? "1px solid #16a34a" : "1px solid #111827",
-                fontSize: "14px",
-                cursor: isOutOfStock ? "not-allowed" : "pointer",
-                transition: "all 0.3s"
-              }}
+              className={`w-full h-11 rounded-md flex items-center justify-center gap-2 text-[13px] font-medium transition-all ${
+                added 
+                  ? "bg-[#15803d] text-white" 
+                  : isOutOfStock 
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed" 
+                    : "bg-[#092218] text-white hover:bg-[#113a2c]"
+              }`}
             >
-              {added ? "Added!" : "Add to cart"}
+              {added ? (
+                <>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  Added to Cart
+                </>
+              ) : (
+                <>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                  Add to Cart
+                </>
+              )}
             </button>
             
             <button
               onClick={handleBuyNow}
               disabled={isOutOfStock}
-              style={{
-                padding: "14px",
-                background: isOutOfStock ? "#9ca3af" : "#111827",
-                color: "#fff",
-                border: "none",
-                fontSize: "14px",
-                cursor: isOutOfStock ? "not-allowed" : "pointer",
-                transition: "background 0.3s"
-              }}
+              className={`w-full h-11 rounded-md flex items-center justify-center gap-2 text-[13px] font-medium transition-all ${
+                isOutOfStock 
+                  ? "hidden" 
+                  : "bg-[#F7F5F0] text-gray-900 hover:bg-[#EFECE5]"
+              }`}
             >
-              Buy it now
+              Buy It Now
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </button>
           </div>
 
           {/* Footer Info */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "24px" }}>
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /> {/* Replacing with a simpler icon if needed, or actual truck icon */}
-            </svg>
-            Estimated delivery time 2-5 days
+          <div className="flex justify-between items-start pt-2 border-t border-gray-100 mb-6">
+            <div className="flex items-start gap-1.5 w-1/3 mt-4">
+              <svg className="shrink-0 mt-0.5 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5"/><path d="M14 17h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+              <div className="text-[10px] text-gray-500 leading-tight">
+                <span className="block text-gray-800 font-medium mb-0.5">Estimated delivery</span>
+                2-5 business days
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-1.5 w-1/3 mt-4">
+              <svg className="shrink-0 mt-0.5 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              <div className="text-[10px] text-gray-500 leading-tight">
+                <span className="block text-gray-800 font-medium mb-0.5">Secure checkout</span>
+                100% protected
+              </div>
+            </div>
+
+            <div className="flex items-start gap-1.5 w-1/3 mt-4">
+              <svg className="shrink-0 mt-0.5 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              <div className="text-[10px] text-gray-500 leading-tight">
+                <span className="block text-gray-800 font-medium mb-0.5">Easy returns</span>
+                7-day returns
+              </div>
+            </div>
           </div>
 
           <a 
@@ -266,19 +262,14 @@ export default function QuickViewModal({ product, onClose }) {
               onClose();
               navigate(`/product/${product._id}`);
             }}
-            style={{
-              fontSize: "12px",
-              color: "#4b5563",
-              textDecoration: "underline",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px"
-            }}
+            className="text-[12px] font-medium text-gray-700 underline underline-offset-4 decoration-gray-300 hover:decoration-gray-700 flex items-center gap-1 w-fit transition-all"
           >
-            View full details &rarr;
+            View full details 
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
         </div>
       </div>
     </div>
   );
 }
+

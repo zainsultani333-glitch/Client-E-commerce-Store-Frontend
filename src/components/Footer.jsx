@@ -49,7 +49,7 @@ export default function Footer() {
               {[
                 { name: "Home", path: "/" },
                 { name: "Products", path: "/products" },
-                { name: "About Us", path: "/about" },
+                /* { name: "About Us", path: "/about" }, */
                 { name: "Contact Us", path: "/contact" }
               ].map(link => (
                 <Link key={link.name} to={link.path} style={{ color: "rgba(255,255,255,0.6)", fontSize: "13px", textDecoration: "none", transition: "all 0.3s ease", display: "inline-block", width: "fit-content" }}

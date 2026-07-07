@@ -90,7 +90,7 @@ export default function Navbar() {
               <div style={{ display: "flex", alignItems: "center", gap: "4px", background: "var(--bg-card)", padding: "4px 8px", borderRadius: "100px", border: "1px solid var(--border)", marginRight: "16px" }}>
                 {navLink("/", "Home")}
                 {navLink("/products", "Products")}
-                {navLink("/about", "About Us")}
+                {/* navLink("/about", "About Us") */}
                 {navLink("/contact", "Contact Us")}
                 {isAdmin && navLink("/admin", "Admin")}
               </div>
@@ -200,7 +200,7 @@ export default function Navbar() {
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {navLink("/", "Home")}
               {navLink("/products", "Products")}
-              {navLink("/about", "About Us")}
+              {/* navLink("/about", "About Us") */}
               {navLink("/contact", "Contact Us")}
               {isAdmin && navLink("/admin", "Admin")}
             </div>
