@@ -6,7 +6,7 @@ import {
 
 const COLORS = ['#c9a84c', '#e8c96e', '#8884d8', '#a855f7', '#ec4899', '#3b82f6', '#14b8a6'];
 
-export default function DashboardCharts({ products, receipts }) {
+export default function DashboardCharts({ products, orders }) {
   // 1. Sales over the last 30 days
   const salesData = useMemo(() => {
     const data = [];
@@ -19,8 +19,8 @@ export default function DashboardCharts({ products, receipts }) {
       data.push({ date: dateString, rawDate: d.toISOString().split('T')[0], revenue: 0, orders: 0 });
     }
 
-    // Populate with receipt data
-    receipts.forEach(r => {
+    // Populate with order data
+    orders.forEach(r => {
       const rDate = new Date(r.createdAt);
       const dateString = rDate.toLocaleDateString('en-PK', { month: 'short', day: 'numeric' });
       const dayData = data.find(d => d.date === dateString);
@@ -31,7 +31,7 @@ export default function DashboardCharts({ products, receipts }) {
     });
 
     return data;
-  }, [receipts]);
+  }, [orders]);
 
   // 2. Inventory by Category
   const inventoryData = useMemo(() => {
@@ -48,10 +48,10 @@ export default function DashboardCharts({ products, receipts }) {
     })).sort((a, b) => b.quantity - a.quantity);
   }, [products]);
 
-  // 3. Top Selling Products (from receipts)
+  // 3. Top Selling Products (from orders)
   const topProductsData = useMemo(() => {
     const prodSales = {};
-    receipts.forEach(r => {
+    orders.forEach(r => {
       // Limit to last 30 days for relevance
       const isRecent = (new Date() - new Date(r.createdAt)) / (1000 * 60 * 60 * 24) <= 30;
       if (!isRecent) return;
@@ -66,7 +66,7 @@ export default function DashboardCharts({ products, receipts }) {
       .map(key => ({ name: key, sales: prodSales[key] }))
       .sort((a, b) => b.sales - a.sales)
       .slice(0, 5); // Top 5
-  }, [receipts]);
+  }, [orders]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', marginBottom: '32px' }}>

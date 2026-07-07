@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
+import { WishlistContext } from "../context/WishlistContext";
 import { useNavigate } from "react-router-dom";
 import QuickViewModal from "./QuickViewModal";
 
@@ -15,6 +16,7 @@ const CATEGORY_COLORS = {
 export default function ProductCard({ product }) {
   const { addToCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
+  const { toggleWishlist, isInWishlist } = useContext(WishlistContext);
   const navigate = useNavigate();
   const [added, setAdded] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -64,7 +66,7 @@ export default function ProductCard({ product }) {
         }}
       >
         {/* Image Container */}
-        <div style={{ position: "relative", aspectRatio: "4/5", overflow: "hidden", background: "#f4f3ef", borderRadius: "12px" }}>
+        <div style={{ position: "relative", aspectRatio: "1/1", overflow: "hidden", background: "#f4f3ef", borderRadius: "12px" }}>
           {!imgError && product.images && product.images.length > 0 ? (
             <img
               src={product.images[0]}
@@ -98,20 +100,20 @@ export default function ProductCard({ product }) {
             width: "36px", height: "36px", background: "#fff", borderRadius: "50%", 
             display: "flex", alignItems: "center", justifyContent: "center", 
             border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-            color: "var(--text-primary)", transition: "all 0.2s"
+            color: isInWishlist(product._id) ? "#e11d48" : "var(--text-primary)", transition: "all 0.2s"
           }}
           onMouseEnter={e => e.currentTarget.style.color = "#e11d48"}
-          onMouseLeave={e => e.currentTarget.style.color = "var(--text-primary)"}
-          onClick={(e) => { e.stopPropagation(); /* Wishlist logic placeholder */ }}
+          onMouseLeave={e => e.currentTarget.style.color = isInWishlist(product._id) ? "#e11d48" : "var(--text-primary)"}
+          onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}
           >
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+            <svg width="18" height="18" fill={isInWishlist(product._id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
           </button>
         </div>
 
         {/* Content */}
-        <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", flex: 1 }}>
+        <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", flex: 1 }}>
           <h3 style={{
-            fontSize: "19px", fontWeight: "600", fontFamily: "'Playfair Display', serif",
+            fontSize: "17px", fontWeight: "600", fontFamily: "'Playfair Display', serif",
             color: "var(--text-primary)", margin: "0 0 4px 0",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
           }}>
@@ -119,12 +121,12 @@ export default function ProductCard({ product }) {
           </h3>
 
           <p style={{
-            fontSize: "13px", color: "var(--text-muted)", margin: "0 0 16px 0"
+            fontSize: "13px", color: "var(--text-muted)", margin: "0 0 10px 0"
           }}>
             {product.category || 'Apparel'}
           </p>
 
-          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: "12px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
               <svg width="12" height="12" fill="#1a3622" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" /></svg>
               <span style={{ fontWeight: "600", color: "#111" }}>{averageRating > 0 ? averageRating : '0.0'}</span>
@@ -146,7 +148,7 @@ export default function ProductCard({ product }) {
           </div>
 
           {/* Sizes */}
-          <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "8px", marginBottom: "12px", flexWrap: "wrap" }}>
             {(product.sizes && product.sizes.length > 0 ? product.sizes : ['S', 'M', 'L', 'XL']).slice(0,4).map(size => (
               <div key={size} style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: "4px", padding: "4px 10px", fontSize: "11px", fontWeight: "500", color: "var(--text-primary)", background: "#fff" }}>
                 {size}
@@ -155,8 +157,8 @@ export default function ProductCard({ product }) {
           </div>
 
           {/* Bottom Row */}
-          <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "16px" }}>
-            <h4 style={{ fontSize: "22px", fontWeight: "700", fontFamily: "'Playfair Display', serif", color: "var(--text-primary)", margin: 0, display: "flex", alignItems: "baseline", gap: "8px" }}>
+          <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "12px" }}>
+            <h4 style={{ fontSize: "20px", fontWeight: "700", fontFamily: "'Playfair Display', serif", color: "var(--text-primary)", margin: 0, display: "flex", alignItems: "baseline", gap: "8px" }}>
               Rs. {product.price.toLocaleString()}
               {isSale && (
                 <span style={{ fontSize: "14px", color: "var(--text-muted)", textDecoration: "line-through", fontWeight: "500", fontFamily: "'Montserrat', sans-serif" }}>
@@ -178,7 +180,7 @@ export default function ProductCard({ product }) {
                 letterSpacing: "1px",
                 textTransform: "uppercase",
                 cursor: isOutOfStock ? "not-allowed" : "pointer",
-                padding: "14px 0",
+                padding: "10px 0",
                 borderRadius: "6px",
                 transition: "all 0.3s ease",
                 opacity: isOutOfStock ? 0.6 : 1

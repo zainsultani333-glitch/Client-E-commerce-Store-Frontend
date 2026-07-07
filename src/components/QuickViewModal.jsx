@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,15 @@ export default function QuickViewModal({ product, onClose }) {
   const [selectedSize, setSelectedSize] = useState(product.sizes && product.sizes.length > 0 ? product.sizes[0] : null);
   const [selectedColor, setSelectedColor] = useState(product.colors && product.colors.length > 0 ? product.colors[0] : null);
   const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    // Disable background scroll
+    document.body.style.overflow = "hidden";
+    return () => {
+      // Re-enable background scroll
+      document.body.style.overflow = "unset";
+    };
+  }, []);
 
   // Prevent clicks inside modal from closing it
   const handleModalClick = (e) => e.stopPropagation();

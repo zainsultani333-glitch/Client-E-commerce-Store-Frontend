@@ -2,10 +2,12 @@ import { useContext, useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { CartContext } from "../context/CartContext";
+import { WishlistContext } from "../context/WishlistContext";
 
 export default function Navbar() {
   const { user, logout, isAdmin } = useContext(AuthContext);
   const { cartCount, clearCart } = useContext(CartContext);
+  const { wishlist } = useContext(WishlistContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -48,6 +50,8 @@ export default function Navbar() {
       </Link>
     );
   };
+
+  if (isAdmin) return null;
 
   return (
     <>
@@ -96,6 +100,15 @@ export default function Navbar() {
               </div>
 
               {user && !isAdmin && (
+                <>
+                  <Link to="/wishlist" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", borderRadius: "50%", background: "var(--bg-card)", border: "1px solid var(--border)", textDecoration: "none", transition: "all 0.3s", marginRight: "8px" }} onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.color = "var(--primary)"; }} onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "inherit"; }}>
+                    <svg style={{ width: "20px", height: "20px", color: wishlist.length > 0 ? "var(--error)" : "var(--text-secondary)" }} fill={wishlist.length > 0 ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    {wishlist.length > 0 && (
+                      <span style={{ position: "absolute", top: "-2px", right: "-2px", minWidth: "20px", height: "20px", background: "var(--error)", color: "#fff", borderRadius: "50%", fontSize: "11px", fontWeight: "800", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--bg-base)", boxShadow: "0 2px 5px rgba(0,0,0,0.2)" }}>{wishlist.length}</span>
+                    )}
+                  </Link>
                 <Link to="/cart" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", borderRadius: "50%", background: "var(--bg-card)", border: "1px solid var(--border)", textDecoration: "none", transition: "all 0.3s", marginRight: "8px" }} onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.color = "var(--primary)"; }} onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "inherit"; }}>
                   <svg style={{ width: "20px", height: "20px", color: cartCount > 0 ? "var(--primary)" : "var(--text-secondary)" }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -116,6 +129,7 @@ export default function Navbar() {
                     }}>{cartCount}</span>
                   )}
                 </Link>
+                </>
               )}
 
               {!user ? (
@@ -169,6 +183,15 @@ export default function Navbar() {
             {/* Mobile Menu Toggle */}
             <div className="mobile-toggle" style={{ alignItems: "center" }}>
               {user && !isAdmin && (
+                <>
+                <Link to="/wishlist" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "40px", height: "40px", borderRadius: "50%", background: "var(--bg-card)", border: "1px solid var(--border)", textDecoration: "none", transition: "all 0.3s", marginRight: "8px" }}>
+                  <svg style={{ width: "20px", height: "20px", color: wishlist.length > 0 ? "var(--error)" : "var(--text-secondary)" }} fill={wishlist.length > 0 ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  {wishlist.length > 0 && (
+                    <span style={{ position: "absolute", top: "-2px", right: "-2px", minWidth: "18px", height: "18px", background: "var(--error)", color: "#fff", borderRadius: "50%", fontSize: "10px", fontWeight: "800", display: "flex", alignItems: "center", justifyContent: "center" }}>{wishlist.length}</span>
+                  )}
+                </Link>
                 <Link to="/cart" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "40px", height: "40px", borderRadius: "50%", background: "var(--bg-card)", border: "1px solid var(--border)", textDecoration: "none", transition: "all 0.3s", marginRight: "12px" }}>
                   <svg style={{ width: "20px", height: "20px", color: cartCount > 0 ? "var(--primary)" : "var(--text-secondary)" }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -177,6 +200,7 @@ export default function Navbar() {
                     <span style={{ position: "absolute", top: "-2px", right: "-2px", minWidth: "18px", height: "18px", background: "var(--primary)", color: "#fff", borderRadius: "50%", fontSize: "10px", fontWeight: "800", display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
                   )}
                 </Link>
+                </>
               )}
               <button 
                 onClick={() => setMenuOpen(!menuOpen)}

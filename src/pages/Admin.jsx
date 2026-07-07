@@ -216,7 +216,7 @@ function ProductModal({ product, categories, onClose, onSave }) {
 }
 
 /* ─── RECEIPT MODAL ─── */
-function ReceiptModal({ products, order, onClose, onSave }) {
+function OrderModal({ products, order, onClose, onSave }) {
   const navigate = useNavigate();
   const [customerName, setCustomerName] = useState(order?.customerName || "");
   const [customerEmail, setCustomerEmail] = useState(order?.customerEmail || "");
@@ -259,16 +259,16 @@ function ReceiptModal({ products, order, onClose, onSave }) {
       };
 
       if (isEdit) {
-        const res = await api.put(`/receipts/${order._id}`, payload);
+        const res = await api.put(`/orders/${order._id}`, payload);
         onSave(res.data);
         onClose();
       } else {
-        const res = await api.post("/receipts", payload);
+        const res = await api.post("/orders", payload);
         onClose();
-        navigate(`/receipt/${res.data._id}`);
+        navigate(`/order/${res.data._id}`);
       }
     } catch (err) {
-      alert(err.response?.data?.message || `Error ${isEdit ? "updating" : "creating"} receipt`);
+      alert(err.response?.data?.message || `Error ${isEdit ? "updating" : "creating"} order`);
     } finally {
       setSaving(false);
     }
@@ -278,7 +278,7 @@ function ReceiptModal({ products, order, onClose, onSave }) {
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal" style={{ maxWidth: "660px" }}>
         <div className="modal-header">
-          <h2 style={{ fontSize: "18px", fontWeight: "700" }}>{isEdit ? "✏️ Edit Order" : "🧾 Create Receipt"}</h2>
+          <h2 style={{ fontSize: "18px", fontWeight: "700" }}>{isEdit ? "✏️ Edit Order" : "🧾 Create Order"}</h2>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "24px" }}>×</button>
         </div>
         <form onSubmit={handleSubmit}>
@@ -336,7 +336,7 @@ function ReceiptModal({ products, order, onClose, onSave }) {
           </div>
           <div className="modal-footer">
             <button type="button" className="btn-ghost" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn-primary" disabled={saving}>{saving ? "Saving..." : isEdit ? "Save Changes" : "Create Receipt"}</button>
+            <button type="submit" className="btn-primary" disabled={saving}>{saving ? "Saving..." : isEdit ? "Save Changes" : "Create Order"}</button>
           </div>
         </form>
       </div>
@@ -344,11 +344,59 @@ function ReceiptModal({ products, order, onClose, onSave }) {
   );
 }
 
+/* ─── VIEW ORDER MODAL ─── */
+function ViewOrderModal({ order, onClose }) {
+  if (!order) return null;
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal" style={{ maxWidth: "500px" }}>
+        <div className="modal-header">
+          <h2 style={{ fontSize: "18px", fontWeight: "700" }}>👁️ View Order Details</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "24px" }}>×</button>
+        </div>
+        <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div>
+            <div style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase" }}>Customer</div>
+            <div style={{ fontWeight: "600", fontSize: "15px" }}>{order.customerName}</div>
+            {order.phone && <div style={{ fontSize: "13px", color: "var(--text-secondary)" }}>📞 {order.phone}</div>}
+            {order.customerEmail && <div style={{ fontSize: "13px", color: "var(--text-secondary)" }}>✉️ {order.customerEmail}</div>}
+            {order.address && <div style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "4px" }}>📍 {order.address}</div>}
+          </div>
+          <div>
+            <div style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "8px" }}>Products</div>
+            <div style={{ background: "var(--bg-elevated)", borderRadius: "8px", border: "1px solid var(--border)", overflow: "hidden" }}>
+              {order.products.map((p, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 12px", borderBottom: i === order.products.length - 1 ? "none" : "1px solid var(--border)" }}>
+                  <div>
+                    <div style={{ fontSize: "13px", fontWeight: "600" }}>{p.name}</div>
+                    {p.category && <div style={{ fontSize: "11px", color: "var(--primary)" }}>{p.category}</div>}
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{p.quantity} x Rs. {p.price.toLocaleString()}</div>
+                    <div style={{ fontSize: "13px", fontWeight: "700" }}>Rs. {(p.quantity * p.price).toLocaleString()}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px", background: "rgba(201,168,76,0.1)", borderRadius: "8px" }}>
+            <div style={{ fontSize: "14px", fontWeight: "600" }}>Total Amount</div>
+            <div style={{ fontSize: "18px", fontWeight: "800", color: "var(--primary)" }}>Rs. {order.totalAmount?.toLocaleString()}</div>
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button onClick={onClose} className="btn-primary" style={{ width: "100%" }}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── DASHBOARD SECTION ─── */
-function DashboardSection({ products, receipts, onGoTo }) {
+function DashboardSection({ products, orders, onGoTo }) {
   const totalValue = products.reduce((s, p) => s + p.price * p.quantity, 0);
   const lowStock = products.filter(p => p.quantity <= 5);
-  const totalRevenue = receipts.reduce((s, r) => s + r.totalAmount, 0);
+  const totalRevenue = orders.reduce((s, r) => s + r.totalAmount, 0);
 
   return (
     <div style={{ padding: "32px" }}>
@@ -362,7 +410,7 @@ function DashboardSection({ products, receipts, onGoTo }) {
         {[
           { icon: "📦", label: "Total Products", value: products.length, sub: "Items in store", click: () => onGoTo("products") },
           { icon: "💰", label: "Inventory Value", value: `Rs. ${totalValue.toLocaleString()}`, sub: "Total stock value" },
-          { icon: "🧾", label: "Total Orders", value: receipts.length, sub: "All time orders", click: () => onGoTo("receipts") },
+          { icon: "🧾", label: "Total Orders", value: orders.length, sub: "All time orders", click: () => onGoTo("orders") },
           { icon: "📈", label: "Total Revenue", value: `Rs. ${totalRevenue.toLocaleString()}`, sub: "From all orders" },
           { icon: "⚠️", label: "Low Stock", value: lowStock.length, sub: "Need restocking", alert: lowStock.length > 0 },
         ].map((s) => (
@@ -379,14 +427,14 @@ function DashboardSection({ products, receipts, onGoTo }) {
       </div>
 
       {/* Analytics Charts */}
-      <DashboardCharts products={products} receipts={receipts} />
+      <DashboardCharts products={products} orders={orders} />
 
       {/* Recent Orders */}
-      {receipts.length > 0 && (
+      {orders.length > 0 && (
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
             <h2 style={{ fontSize: "16px", fontWeight: "700", margin: 0 }}>Recent Orders</h2>
-            <button onClick={() => onGoTo("receipts")} style={{ fontSize: "13px", color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Montserrat',sans-serif" }}>View all →</button>
+            <button onClick={() => onGoTo("orders")} style={{ fontSize: "13px", color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Montserrat',sans-serif" }}>View all →</button>
           </div>
           <div className="table-wrapper">
             <table className="table">
@@ -400,7 +448,7 @@ function DashboardSection({ products, receipts, onGoTo }) {
                 </tr>
               </thead>
               <tbody>
-                {receipts.slice(0, 4).map(r => (
+                {orders.slice(0, 4).map(r => (
                   <tr key={r._id}>
                     <td style={{ fontWeight: "600" }}>{r.customerName}</td>
                     <td style={{ color: "var(--text-muted)", fontSize: "13px" }}>{r.phone || "—"}</td>
@@ -526,27 +574,64 @@ function ProductsSection({ products, categories, onAdd, onEdit, onDelete }) {
 }
 
 /* ─── ORDERS SECTION ─── */
-function OrdersSection({ orders, onConfirm, onCancel, onEditOrder }) {
+function OrdersSection({ orders, onConfirm, onCancel, onEditOrder, onStatusChange, onViewOrder }) {
+  const [activeTab, setActiveTab] = useState("pending");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
-  const totalPages = Math.ceil(orders.length / itemsPerPage);
-  const currentItems = orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const filteredOrders = orders.filter(o => o.status === activeTab);
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const currentItems = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div style={{ padding: "32px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px", flexWrap: "wrap", gap: "12px" }}>
         <div>
           <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Orders</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{orders.length} pending orders</p>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>Manage orders through all stages</p>
         </div>
       </div>
+      
+      <div style={{ display: "flex", gap: "8px", marginBottom: "24px", borderBottom: "1px solid var(--border)", paddingBottom: "12px", overflowX: "auto" }}>
+        {["pending", "processing", "shipped", "completed"].map(tab => (
+          <button
+            key={tab}
+            onClick={() => { setActiveTab(tab); setCurrentPage(1); }}
+            style={{
+              padding: "8px 20px",
+              background: activeTab === tab ? "var(--primary)" : "transparent",
+              color: activeTab === tab ? "#fff" : "var(--text-secondary)",
+              border: "none",
+              borderRadius: "20px",
+              fontWeight: "600",
+              cursor: "pointer",
+              textTransform: "capitalize",
+              fontSize: "14px",
+              transition: "all 0.2s",
+              whiteSpace: "nowrap"
+            }}
+          >
+            {tab}
+            <span style={{ 
+              marginLeft: "8px", 
+              background: activeTab === tab ? "rgba(255,255,255,0.2)" : "var(--bg-elevated)", 
+              padding: "2px 8px", 
+              borderRadius: "12px", 
+              fontSize: "11px",
+              color: activeTab === tab ? "#fff" : "inherit"
+            }}>
+              {orders.filter(o => o.status === tab).length}
+            </span>
+          </button>
+        ))}
+      </div>
+
       <div className="table-wrapper">
-        {orders.length === 0 ? (
+        {filteredOrders.length === 0 ? (
           <div style={{ padding: "60px", textAlign: "center" }}>
             <div style={{ fontSize: "48px", marginBottom: "12px" }}>📦</div>
-            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No new orders</h3>
-            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>When customers place orders, they will appear here to be confirmed.</p>
+            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No {activeTab} orders</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>There are currently no orders in this stage.</p>
           </div>
         ) : (
           <table className="table">
@@ -578,16 +663,34 @@ function OrdersSection({ orders, onConfirm, onCancel, onEditOrder }) {
                     {new Date(o.createdAt).toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                   </td>
                   <td>
-                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", alignItems: "center" }}>
+                      <button className="btn-ghost" style={{ fontSize: "12px", padding: "5px 10px", color: "var(--primary)" }} onClick={() => onViewOrder(o)}>
+                        👁️ View
+                      </button>
                       <button className="btn-ghost" style={{ fontSize: "12px", padding: "5px 10px", color: "var(--primary)" }} onClick={() => onEditOrder(o)}>
                         ✏️ Edit
                       </button>
-                      <button className="btn-danger" style={{ fontSize: "12px", padding: "5px 10px" }} onClick={() => onCancel(o._id)}>
-                        ❌ Cancel
-                      </button>
-                      <button className="btn-primary" style={{ fontSize: "12px", padding: "5px 10px" }} onClick={() => onConfirm(o._id)}>
-                        ✅ Confirm
-                      </button>
+                      {o.status === "pending" ? (
+                        <>
+                          <button className="btn-danger" style={{ fontSize: "12px", padding: "5px 10px" }} onClick={() => onCancel(o._id)}>
+                            ❌ Cancel
+                          </button>
+                          <button className="btn-primary" style={{ fontSize: "12px", padding: "5px 10px" }} onClick={() => onConfirm(o._id)}>
+                            ✅ Confirm
+                          </button>
+                        </>
+                      ) : (
+                        <select 
+                          className="input" 
+                          style={{ padding: "4px 8px", fontSize: "12px", height: "auto", minWidth: "110px", borderColor: o.status === "completed" ? "var(--success)" : "var(--primary)" }}
+                          value={o.status}
+                          onChange={(e) => onStatusChange(o._id, e.target.value)}
+                        >
+                          <option value="processing">Processing</option>
+                          <option value="shipped">Shipped</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -602,30 +705,30 @@ function OrdersSection({ orders, onConfirm, onCancel, onEditOrder }) {
 }
 
 /* ─── RECEIPTS SECTION ─── */
-function ReceiptsSection({ receipts, onNewReceipt, onStatusChange, onDelete }) {
+function OrderHistorySection({ orders, onNewOrder, onDelete }) {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
-  const totalPages = Math.ceil(receipts.length / itemsPerPage);
-  const currentItems = receipts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
+  const currentItems = orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div style={{ padding: "32px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
         <div>
-          <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Receipts & Processing</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{receipts.length} orders in progress</p>
+          <h1 style={{ fontSize: "24px", fontWeight: "800", margin: "0 0 4px" }}>Orders</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>{orders.length} confirmed orders</p>
         </div>
-        <button className="btn-primary" onClick={onNewReceipt}>🧾 New Receipt</button>
+        <button className="btn-primary" onClick={onNewOrder}>🧾 New Order</button>
       </div>
       <div className="table-wrapper">
-        {receipts.length === 0 ? (
+        {orders.length === 0 ? (
           <div style={{ padding: "60px", textAlign: "center" }}>
             <div style={{ fontSize: "48px", marginBottom: "12px" }}>🧾</div>
-            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No receipts yet</h3>
-            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>Create your first receipt or confirm an order.</p>
-            <button className="btn-primary" onClick={onNewReceipt}>🧾 Create Receipt</button>
+            <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>No orders yet</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>Create your first order or confirm an order.</p>
+            <button className="btn-primary" onClick={onNewOrder}>🧾 Create Order</button>
           </div>
         ) : (
           <table className="table">
@@ -654,31 +757,24 @@ function ReceiptsSection({ receipts, onNewReceipt, onStatusChange, onDelete }) {
                     {new Date(r.createdAt).toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" })}
                   </td>
                   <td>
-                    <select 
-                      className="input" 
-                      style={{ padding: "4px 8px", fontSize: "13px", height: "auto", minWidth: "110px", borderColor: r.status === "completed" ? "var(--success)" : r.status === "processing" ? "var(--primary)" : "var(--border)" }}
-                      value={r.status}
-                      onChange={(e) => onStatusChange(r._id, e.target.value)}
-                      disabled={r.status === "completed"}
-                    >
-                      <option value="processing">Processing</option>
-                      <option value="completed">Completed</option>
-                    </select>
+                    <span style={{ 
+                      fontSize: "12px", 
+                      fontWeight: "600", 
+                      padding: "4px 8px", 
+                      borderRadius: "4px",
+                      color: r.status === "completed" ? "var(--success)" : "var(--primary)",
+                      background: r.status === "completed" ? "rgba(34,197,94,0.1)" : "rgba(201,168,76,0.1)",
+                      textTransform: "capitalize"
+                    }}>{r.status}</span>
                   </td>
                   <td>
                     <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-                      {r.status === "completed" ? (
-                        <>
-                          <button className="btn-ghost" style={{ fontSize: "13px", padding: "7px 14px", color: "var(--success)" }} onClick={() => navigate(`/receipt/${r._id}`)}>
-                            🖨️ Generate Receipt
-                          </button>
-                          <button className="btn-danger" style={{ fontSize: "13px", padding: "7px 14px" }} onClick={() => onDelete(r._id)}>
-                            🗑️ Delete
-                          </button>
-                        </>
-                      ) : (
-                         <span style={{ fontSize: "12px", color: "var(--text-muted)", fontStyle: "italic", padding: "7px 14px" }}>Processing</span>
-                      )}
+                      <button className="btn-ghost" style={{ fontSize: "13px", padding: "7px 14px", color: "var(--success)" }} onClick={() => navigate(`/order/${r._id}`)}>
+                        🖨️ Generate Order
+                      </button>
+                      <button className="btn-danger" style={{ fontSize: "13px", padding: "7px 14px" }} onClick={() => onDelete(r._id)}>
+                        🗑️ Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -1065,7 +1161,7 @@ function CategoriesSection({ categories, onAdd, onEdit, onDelete }) {
 export default function Admin() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [receipts, setReceipts] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1081,8 +1177,9 @@ export default function Admin() {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
   const [deleteCategoryId, setDeleteCategoryId] = useState(null);
-  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [showOrderModal, setShowOrderModal] = useState(false);
   const [editOrder, setEditOrder] = useState(null);
+  const [viewOrder, setViewOrder] = useState(null);
   const [viewMessage, setViewMessage] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [toast, setToast] = useState(null);
@@ -1092,13 +1189,13 @@ export default function Admin() {
       const [pRes, cRes, rRes, uRes, mRes] = await Promise.all([
         api.get("/products"),
         api.get("/categories").catch(() => ({ data: [] })),
-        api.get("/receipts"),
+        api.get("/orders"),
         api.get("/users"),
         api.get("/contact").catch(() => ({ data: [] })) // Default to empty if contact endpoint is missing
       ]);
       setProducts(pRes.data);
       setCategories(cRes.data);
-      setReceipts(rRes.data);
+      setOrders(rRes.data);
       setUsers(uRes.data);
       setMessages(mRes.data);
     } catch (e) { console.error(e); }
@@ -1197,8 +1294,8 @@ export default function Admin() {
 
   const handleConfirmOrder = async (id) => {
     try {
-      const res = await api.put(`/receipts/${id}/status`, { status: "processing" });
-      setReceipts(prev => prev.map(r => r._id === id ? res.data : r));
+      const res = await api.put(`/orders/${id}/status`, { status: "processing" });
+      setOrders(prev => prev.map(r => r._id === id ? res.data : r));
       showToast("Order confirmed and moved to processing!");
     } catch (err) {
       showToast("Failed to confirm order", "error");
@@ -1208,8 +1305,8 @@ export default function Admin() {
   const handleCancelOrder = async (id) => {
     if (!window.confirm("Are you sure you want to cancel this order?")) return;
     try {
-      const res = await api.put(`/receipts/${id}/status`, { status: "cancelled" });
-      setReceipts(prev => prev.map(r => r._id === id ? res.data : r));
+      const res = await api.put(`/orders/${id}/status`, { status: "cancelled" });
+      setOrders(prev => prev.map(r => r._id === id ? res.data : r));
       showToast("Order cancelled!");
     } catch (err) {
       showToast("Failed to cancel order", "error");
@@ -1218,27 +1315,27 @@ export default function Admin() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await api.put(`/receipts/${id}/status`, { status: newStatus });
-      setReceipts(prev => prev.map(r => r._id === id ? res.data : r));
+      const res = await api.put(`/orders/${id}/status`, { status: newStatus });
+      setOrders(prev => prev.map(r => r._id === id ? res.data : r));
       showToast(`Order marked as ${newStatus}`);
     } catch (err) {
-      showToast("Failed to update status", "error");
+      showToast(err.response?.data?.message || err.response?.data?.error || err.message || "Failed to update status", "error");
     }
   };
 
-  const handleDeleteReceipt = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this completed receipt?")) return;
+  const handleDeleteOrder = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this completed order?")) return;
     try {
-      await api.delete(`/receipts/${id}`);
-      setReceipts(prev => prev.filter(r => r._id !== id));
-      showToast("Receipt deleted!");
+      await api.delete(`/orders/${id}`);
+      setOrders(prev => prev.filter(r => r._id !== id));
+      showToast("Order deleted!");
     } catch (err) {
-      showToast("Failed to delete receipt", "error");
+      showToast("Failed to delete order", "error");
     }
   };
 
-  const pendingOrders = receipts.filter(r => r.status === "pending");
-  const processingReceipts = receipts.filter(r => r.status !== "pending" && r.status !== "cancelled");
+  const activeOrders = orders.filter(r => r.status !== "cancelled");
+  const completedOrders = orders.filter(r => r.status !== "pending" && r.status !== "cancelled");
 
   if (loading) {
     return (
@@ -1254,7 +1351,7 @@ export default function Admin() {
   return (
     <AdminLayout activeSection={section} onSectionChange={setSection}>
       {section === "dashboard" && (
-        <DashboardSection products={products} receipts={receipts} onGoTo={setSection} />
+        <DashboardSection products={products} orders={orders} onGoTo={setSection} />
       )}
       {section === "products" && (
         <ProductsSection
@@ -1275,14 +1372,16 @@ export default function Admin() {
       )}
       {section === "orders" && (
         <OrdersSection 
-          orders={pendingOrders} 
+          orders={activeOrders} 
           onConfirm={handleConfirmOrder} 
           onCancel={handleCancelOrder}
-          onEditOrder={(order) => { setEditOrder(order); setShowReceiptModal(true); }}
+          onEditOrder={(order) => { setEditOrder(order); setShowOrderModal(true); }}
+          onStatusChange={handleStatusChange}
+          onViewOrder={setViewOrder}
         />
       )}
-      {section === "receipts" && (
-        <ReceiptsSection receipts={processingReceipts} onNewReceipt={() => setShowReceiptModal(true)} onStatusChange={handleStatusChange} onDelete={handleDeleteReceipt} />
+      {section === "history" && (
+        <OrderHistorySection orders={completedOrders} onNewOrder={() => setShowOrderModal(true)} onDelete={handleDeleteOrder} />
       )}
       {section === "users" && (
         <UsersSection users={users} onDelete={handleDeleteUser} />
@@ -1301,15 +1400,18 @@ export default function Admin() {
       {(showCategoryModal || editCategory) && (
         <CategoryModal category={editCategory} onClose={() => { setShowCategoryModal(false); setEditCategory(null); }} onSave={handleSaveCategory} />
       )}
-      {(showReceiptModal || editOrder) && (
-        <ReceiptModal 
-          products={products} 
+      {showOrderModal && (
+        <OrderModal
+          products={products}
           order={editOrder}
-          onClose={() => { setShowReceiptModal(false); setEditOrder(null); }} 
+          onClose={() => { setShowOrderModal(false); setEditOrder(null); }}
           onSave={(updatedOrder) => {
-            setReceipts(prev => prev.map(r => r._id === updatedOrder._id ? updatedOrder : r));
+            setOrders(prev => prev.some(r => r._id === updatedOrder._id) ? prev.map(r => r._id === updatedOrder._id ? updatedOrder : r) : [updatedOrder, ...prev]);
           }}
         />
+      )}
+      {viewOrder && (
+        <ViewOrderModal order={viewOrder} onClose={() => setViewOrder(null)} />
       )}
       {viewMessage && (
         <MessageModal message={viewMessage} onClose={() => setViewMessage(null)} onMarkRead={handleMarkMessageRead} />

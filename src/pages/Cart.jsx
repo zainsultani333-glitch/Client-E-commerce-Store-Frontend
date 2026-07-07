@@ -1,9 +1,16 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import Footer from "../components/Footer";
+
+const STATUS_STAGES = [
+  { id: "pending", label: "Placed", icon: "📦" },
+  { id: "processing", label: "Processing", icon: "⚙️" },
+  { id: "shipped", label: "Shipped", icon: "🚚" },
+  { id: "completed", label: "Delivered", icon: "🎉" }
+];
 
 export default function Cart() {
   const { cart, removeFromCart, updateQty, clearCart, cartTotal, cartCount } = useContext(CartContext);
@@ -13,13 +20,26 @@ export default function Cart() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [checking, setChecking] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [myOrders, setMyOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+
   const [form, setForm] = useState({
     name: user?.name || "",
     email: user?.email || "",
-    phone: "",
-    address: "",
+    phone: user?.phone || "",
+    address: user?.address || "",
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (user) {
+      setLoadingOrders(true);
+      api.get("/orders/my/orders")
+        .then(res => setMyOrders(res.data))
+        .catch(err => console.error(err))
+        .finally(() => setLoadingOrders(false));
+    }
+  }, [user, orderPlaced]);
 
   const validate = () => {
     const e = {};
@@ -37,7 +57,7 @@ export default function Cart() {
     if (!user) { navigate("/login"); return; }
     setChecking(true);
     try {
-      const res = await api.post("/receipts", {
+      await api.post("/orders", {
         customerName: form.name,
         customerEmail: form.email,
         phone: form.phone,
@@ -61,33 +81,160 @@ export default function Cart() {
     }
   };
 
+  const renderTracker = (status) => {
+    if (status === "cancelled") {
+      return (
+        <div style={{ marginTop: "24px", padding: "16px", background: "rgba(239,68,68,0.05)", borderRadius: "12px", border: "1px solid rgba(239,68,68,0.2)", color: "var(--error)", fontWeight: "600", textAlign: "center", fontSize: "14px" }}>
+          🚫 This order was cancelled
+        </div>
+      );
+    }
+
+    const currentIndex = Math.max(0, STATUS_STAGES.findIndex(s => s.id === status));
+    const progressPercent = (currentIndex / (STATUS_STAGES.length - 1)) * 100;
+
+    return (
+      <div style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px dashed #EAE3D7" }}>
+        <div style={{ position: "relative", padding: "0 10px" }}>
+          
+          {/* Track Line Container */}
+          <div style={{ position: "absolute", top: "15px", left: "30px", right: "30px", height: "4px", background: "#EAE3D7", borderRadius: "2px", zIndex: 0 }}>
+            {/* Animated Fill Line */}
+            <div style={{ position: "absolute", top: "0", left: "0", height: "100%", background: "var(--primary)", borderRadius: "2px", width: `${progressPercent}%`, transition: "width 1.2s cubic-bezier(0.4, 0, 0.2, 1)" }} />
+
+            {/* The Vehicle (Truck) */}
+            <div style={{ 
+              position: "absolute", 
+              top: "-20px", 
+              left: `${progressPercent}%`, 
+              transform: "translateX(-50%)", 
+              fontSize: "24px", 
+              transition: "left 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              zIndex: 3,
+              filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.15))"
+            }}>
+              🚚
+            </div>
+          </div>
+
+          {/* Nodes */}
+          <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 2 }}>
+            {STATUS_STAGES.map((stage, idx) => {
+              const isCompleted = idx <= currentIndex;
+              const isCurrent = idx === currentIndex;
+              return (
+                <div key={stage.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "60px" }}>
+                  <div style={{ 
+                    width: "34px", height: "34px", 
+                    borderRadius: "50%", 
+                    background: isCompleted ? "var(--primary)" : "#fff",
+                    border: `3px solid ${isCompleted ? "var(--primary)" : "#EAE3D7"}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "14px", color: isCompleted ? "#fff" : "transparent",
+                    transition: "all 0.5s ease",
+                    transitionDelay: isCompleted ? "0.3s" : "0s",
+                    boxShadow: isCurrent ? "0 0 0 6px rgba(201,168,76,0.15)" : "none"
+                  }}>
+                    {isCompleted ? "✓" : ""}
+                  </div>
+                  <div style={{ 
+                    marginTop: "12px", 
+                    fontSize: "12px", 
+                    fontWeight: isCurrent ? "800" : isCompleted ? "600" : "500",
+                    color: isCurrent ? "var(--primary)" : isCompleted ? "var(--text-primary)" : "var(--text-muted)",
+                    textAlign: "center",
+                    transition: "color 0.5s ease"
+                  }}>
+                    {stage.label}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderMyOrders = () => {
+    if (!user || (myOrders.length === 0 && !loadingOrders)) return null;
+    return (
+      <div style={{ marginTop: "60px", width: "100%", maxWidth: "1200px", margin: "60px auto 0" }}>
+        <h2 style={{ fontSize: "32px", fontWeight: "400", fontFamily: "'Playfair Display', serif", color: "#1A201C", margin: "0 0 24px", letterSpacing: "-0.5px", borderBottom: "1px solid #EAE3D7", paddingBottom: "16px" }}>My Orders</h2>
+        {loadingOrders ? (
+          <p style={{ color: "#8B867E" }}>Loading your orders...</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            {myOrders.map(order => (
+              <div key={order._id} style={{ backgroundColor: "#fff", borderRadius: "16px", padding: "24px", border: "1px solid #EAE3D7", display: "flex", flexDirection: "column", boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
+                {/* Order Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
+                  <div>
+                    <div style={{ fontSize: "14px", color: "#8B867E", marginBottom: "4px" }}>Order #{order._id.substring(18).toUpperCase()}</div>
+                    <div style={{ fontSize: "16px", fontWeight: "600", color: "#1A201C" }}>{order.products.length} {order.products.length === 1 ? "item" : "items"}</div>
+                    <div style={{ fontSize: "13px", color: "#8B867E", marginTop: "8px" }}>{new Date(order.createdAt).toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" })}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: "18px", fontWeight: "700", color: "#2C3B2E", marginBottom: "8px" }}>Rs. {order.totalAmount.toLocaleString()}</div>
+                    <span style={{ 
+                      padding: "6px 12px", 
+                      borderRadius: "20px", 
+                      fontSize: "12px", 
+                      fontWeight: "700", 
+                      textTransform: "capitalize",
+                      backgroundColor: order.status === "completed" ? "rgba(34,197,94,0.1)" : order.status === "cancelled" ? "rgba(239,68,68,0.1)" : "rgba(201,168,76,0.1)",
+                      color: order.status === "completed" ? "var(--success)" : order.status === "cancelled" ? "var(--error)" : "var(--primary)",
+                      display: "inline-block"
+                    }}>
+                      {order.status}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Animated Tracker */}
+                {renderTracker(order.status)}
+
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (orderPlaced) {
     return (
       <>
-        <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px", padding: "40px 24px", textAlign: "center" }}>
-        <div style={{ fontSize: "100px", lineHeight: 1, marginBottom: "10px" }} className="animate-float">🎉</div>
-        <h2 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "4px" }}>Your order is placed successfully</h2>
-        <p style={{ color: "var(--text-muted)", marginBottom: "16px" }}>Thank you for shopping with us! Your order will be delivered soon.</p>
-        <Link to="/" style={{ padding: "12px 32px", background: "#2F6B4C", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: "700", fontSize: "16px", transition: "var(--transition)" }}>Go Home</Link>
-      </div>
-      <Footer />
-    </>
-  );
-}
+        <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", display: "flex", alignItems: "center", padding: "60px 24px", flexDirection: "column" }}>
+          <div style={{ textAlign: "center", marginBottom: "40px" }}>
+            <div style={{ fontSize: "100px", lineHeight: 1, marginBottom: "10px" }} className="animate-float">🎉</div>
+            <h2 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "4px" }}>Your order is placed successfully</h2>
+            <p style={{ color: "var(--text-muted)", marginBottom: "16px" }}>Thank you for shopping with us! Your order will be delivered soon.</p>
+            <button onClick={() => setOrderPlaced(false)} style={{ padding: "12px 32px", background: "#2F6B4C", color: "white", borderRadius: "8px", border: "none", fontWeight: "700", fontSize: "16px", cursor: "pointer", transition: "var(--transition)" }}>View My Orders</button>
+          </div>
+          {renderMyOrders()}
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   if (cart.length === 0) {
     return (
       <>
-        <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px", padding: "40px 24px" }}>
-        <div style={{ fontSize: "80px", lineHeight: 1 }} className="animate-float">🛒</div>
-        <h2 style={{ fontSize: "24px", fontWeight: "800" }}>Your basket is empty</h2>
-        <p style={{ color: "var(--text-muted)", textAlign: "center" }}>Browse our collection and add items to your basket</p>
-        <Link to="/" className="btn-primary" style={{ padding: "13px 28px" }}>Continue Shopping →</Link>
-      </div>
-      <Footer />
-    </>
-  );
-}
+        <div style={{ minHeight: "calc(100vh - 72px)", background: "var(--bg-base)", display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 24px" }}>
+          <div style={{ textAlign: "center", marginBottom: "40px" }}>
+            <div style={{ fontSize: "80px", lineHeight: 1 }} className="animate-float">🛒</div>
+            <h2 style={{ fontSize: "24px", fontWeight: "800", marginTop: "20px" }}>Your basket is empty</h2>
+            <p style={{ color: "var(--text-muted)", marginTop: "10px", marginBottom: "20px" }}>Browse our collection and add items to your basket</p>
+            <Link to="/" className="btn-primary" style={{ padding: "13px 28px", display: "inline-block", textDecoration: "none" }}>Continue Shopping →</Link>
+          </div>
+          {renderMyOrders()}
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -251,6 +398,10 @@ export default function Cart() {
               )}
             </div>
           </div>
+          
+          {/* RENDER MY ORDERS AT THE BOTTOM OF THE PAGE */}
+          {renderMyOrders()}
+          
         </div>
       <style>{`
         .cart-grid {

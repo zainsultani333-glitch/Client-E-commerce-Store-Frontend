@@ -44,8 +44,8 @@ const NAV_ITEMS = [
     ),
   },
   {
-    id: "receipts",
-    label: "Receipts",
+    id: "history",
+    label: "Order History",
     icon: (
       <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
@@ -94,7 +94,7 @@ export default function AdminLayout({ children, activeSection, onSectionChange }
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "calc(100vh - 72px)", background: "var(--bg-base)" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg-base)" }}>
 
       {/* ─── SIDEBAR ─── */}
       <aside style={{
@@ -106,8 +106,8 @@ export default function AdminLayout({ children, activeSection, onSectionChange }
         transition: "width 0.3s cubic-bezier(0.4,0,0.2,1)",
         flexShrink: 0,
         position: "sticky",
-        top: "72px",
-        height: "calc(100vh - 72px)",
+        top: "0",
+        height: "100vh",
         overflowY: "auto",
         overflowX: "hidden",
       }}>
@@ -210,6 +210,44 @@ export default function AdminLayout({ children, activeSection, onSectionChange }
           })}
         </nav>
 
+        {/* LOGOUT BUTTON */}
+        <div style={{ padding: "0 10px 16px 10px" }}>
+          <button
+            onClick={handleLogout}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: collapsed ? "12px" : "12px 14px",
+              borderRadius: "10px",
+              border: "none",
+              cursor: "pointer",
+              background: "rgba(239, 68, 68, 0.1)",
+              color: "var(--error)",
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: "14px",
+              fontWeight: "700",
+              transition: "var(--transition)",
+              justifyContent: collapsed ? "center" : "flex-start",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(239, 68, 68, 0.2)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+            }}
+            title="Logout"
+          >
+            <span style={{ flexShrink: 0 }}>
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </span>
+            {!collapsed && <span>Logout</span>}
+          </button>
+        </div>
+
         {/* Sidebar Footer — User Info */}
         <div style={{
           padding: collapsed ? "16px 10px" : "16px 14px",
@@ -234,39 +272,19 @@ export default function AdminLayout({ children, activeSection, onSectionChange }
                   Administrator
                 </div>
               </div>
-              <button
-                onClick={handleLogout}
-                title="Logout"
-                style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  color: "var(--text-muted)", padding: "4px", flexShrink: 0,
-                  transition: "var(--transition)",
-                }}
-                onMouseEnter={e => e.target.style.color = "var(--error)"}
-                onMouseLeave={e => e.target.style.color = "var(--text-muted)"}
-              >
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-              </button>
             </div>
           ) : (
-            <button
-              onClick={handleLogout}
-              title="Logout"
-              style={{
-                width: "100%", background: "none", border: "none", cursor: "pointer",
-                color: "var(--text-muted)", padding: "8px", borderRadius: "8px",
-                display: "flex", justifyContent: "center",
-                transition: "var(--transition)",
-              }}
-            >
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <div style={{
+                width: "34px", height: "34px", flexShrink: 0,
+                background: "linear-gradient(135deg, var(--primary), var(--primary-light))",
+                borderRadius: "50%",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "13px", fontWeight: "800", color: "var(--bg-base)",
+              }}>
+                {user?.name?.[0]?.toUpperCase()}
+              </div>
+            </div>
           )}
         </div>
       </aside>

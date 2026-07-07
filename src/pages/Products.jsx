@@ -3,11 +3,10 @@ import api from "../api/axios";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 
-const CATEGORIES = ["All", "Shirts", "Hoodies", "Shorts", "Trousers"];
 
 const SkeletonCard = () => (
   <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden" }}>
-    <div className="skeleton" style={{ aspectRatio: "4/3" }} />
+    <div className="skeleton" style={{ aspectRatio: "1/1" }} />
     <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
       <div className="skeleton" style={{ height: "18px", width: "70%", borderRadius: "6px" }} />
       <div className="skeleton" style={{ height: "12px", width: "90%", borderRadius: "6px" }} />
@@ -19,14 +18,23 @@ const SkeletonCard = () => (
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(["All"]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
-    api.get("/products")
-      .then((res) => { setProducts(res.data); setLoading(false); })
+    Promise.all([
+      api.get("/products"),
+      api.get("/categories")
+    ])
+      .then(([productsRes, categoriesRes]) => {
+        setProducts(productsRes.data);
+        const fetchedCategories = categoriesRes.data.map(cat => cat.name);
+        setCategories(["All", ...fetchedCategories]);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, []);
 
@@ -77,8 +85,9 @@ export default function Products() {
       }}>
         <div className="container" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           {/* Categories */}
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", flex: 1 }}>
-            {CATEGORIES.map((cat) => (
+          {/* Categories - Pills (Desktop) */}
+          <div className="category-pills" style={{ gap: "8px", flexWrap: "wrap", flex: 1 }}>
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
@@ -98,6 +107,20 @@ export default function Products() {
                 {cat}
               </button>
             ))}
+          </div>
+
+          {/* Categories - Dropdown (Mobile/Tablet) */}
+          <div className="category-dropdown" style={{ flex: "1 1 100%" }}>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="input"
+              style={{ width: "100%", padding: "10px 14px", fontSize: "14px", fontWeight: "600", fontFamily: "'Montserrat', sans-serif" }}
+            >
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
 
           {/* Sort */}
@@ -190,6 +213,12 @@ export default function Products() {
             grid-template-columns: 1fr;
             gap: 20px;
           }
+          .category-pills {
+            display: none;
+          }
+          .category-dropdown {
+            display: block;
+          }
           @media (min-width: 640px) {
             .products-grid {
               grid-template-columns: repeat(2, 1fr);
@@ -198,6 +227,12 @@ export default function Products() {
           @media (min-width: 1024px) {
             .products-grid {
               grid-template-columns: repeat(3, 1fr);
+            }
+            .category-pills {
+              display: flex;
+            }
+            .category-dropdown {
+              display: none;
             }
           }
           @media (min-width: 1280px) {

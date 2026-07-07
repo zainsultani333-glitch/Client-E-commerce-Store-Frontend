@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
+import { WishlistContext } from "../context/WishlistContext";
 import Footer from "../components/Footer";
 import ProductCard from "../components/ProductCard";
 
@@ -18,6 +19,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
+  const { toggleWishlist, isInWishlist } = useContext(WishlistContext);
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -267,13 +269,13 @@ export default function ProductDetail() {
                     width: "44px", height: "44px", background: "#fff", borderRadius: "50%", 
                     display: "flex", alignItems: "center", justifyContent: "center", 
                     border: "1px solid rgba(0,0,0,0.05)", cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-                    color: "var(--text-primary)", transition: "all 0.2s", zIndex: 10
+                    color: isInWishlist(product?._id) ? "#e11d48" : "var(--text-primary)", transition: "all 0.2s", zIndex: 10
                   }}
                   onMouseEnter={e => e.currentTarget.style.color = "#e11d48"}
-                  onMouseLeave={e => e.currentTarget.style.color = "var(--text-primary)"}
-                  onClick={(e) => { e.stopPropagation(); /* Wishlist logic placeholder */ }}
+                  onMouseLeave={e => e.currentTarget.style.color = isInWishlist(product?._id) ? "#e11d48" : "var(--text-primary)"}
+                  onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}
                   >
-                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+                    <svg width="20" height="20" fill={isInWishlist(product?._id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
                   </button>
 
                   {/* Zoom Icon Button */}
@@ -571,22 +573,22 @@ export default function ProductDetail() {
             </div>
 
             {/* Trust Badges */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: "16px", marginTop: "4px" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
-                <svg width="20" height="20" fill="none" stroke="var(--text-secondary)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                <div style={{ fontSize: "10px", lineHeight: "1.2", color: "var(--text-secondary)" }}><span style={{ fontWeight: "700", display: "block" }}>Secure</span>Payments</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "16px", borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: "20px", marginTop: "8px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                <svg style={{ flexShrink: 0 }} width="22" height="22" fill="none" stroke="var(--text-secondary)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                <div style={{ fontSize: "11px", lineHeight: "1.3", color: "var(--text-secondary)" }}><span style={{ fontWeight: "700", display: "block", color: "var(--text-primary)", marginBottom: "2px" }}>Secure</span>Payments</div>
               </div>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
-                <svg width="20" height="20" fill="none" stroke="var(--text-secondary)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
-                <div style={{ fontSize: "10px", lineHeight: "1.2", color: "var(--text-secondary)" }}><span style={{ fontWeight: "700", display: "block" }}>Free Shipping</span>on orders above Rs. 2,500</div>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                <svg style={{ flexShrink: 0 }} width="22" height="22" fill="none" stroke="var(--text-secondary)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                <div style={{ fontSize: "11px", lineHeight: "1.3", color: "var(--text-secondary)" }}><span style={{ fontWeight: "700", display: "block", color: "var(--text-primary)", marginBottom: "2px" }}>Free Shipping</span>on orders above Rs. 2,500</div>
               </div>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
-                <svg width="20" height="20" fill="none" stroke="var(--text-secondary)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
-                <div style={{ fontSize: "10px", lineHeight: "1.2", color: "var(--text-secondary)" }}><span style={{ fontWeight: "700", display: "block" }}>Premium Quality</span>100% Original</div>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                <svg style={{ flexShrink: 0 }} width="22" height="22" fill="none" stroke="var(--text-secondary)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+                <div style={{ fontSize: "11px", lineHeight: "1.3", color: "var(--text-secondary)" }}><span style={{ fontWeight: "700", display: "block", color: "var(--text-primary)", marginBottom: "2px" }}>Premium Quality</span>100% Original</div>
               </div>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
-                <svg width="20" height="20" fill="none" stroke="var(--text-secondary)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                <div style={{ fontSize: "10px", lineHeight: "1.2", color: "var(--text-secondary)" }}><span style={{ fontWeight: "700", display: "block" }}>Easy Returns</span>7-day return policy</div>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                <svg style={{ flexShrink: 0 }} width="22" height="22" fill="none" stroke="var(--text-secondary)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                <div style={{ fontSize: "11px", lineHeight: "1.3", color: "var(--text-secondary)" }}><span style={{ fontWeight: "700", display: "block", color: "var(--text-primary)", marginBottom: "2px" }}>Easy Returns</span>7-day return policy</div>
               </div>
             </div>
           </div>

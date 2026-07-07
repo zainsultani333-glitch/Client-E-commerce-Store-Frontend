@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 const SkeletonCard = () => (
   <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden" }}>
-    <div className="skeleton" style={{ aspectRatio: "4/3" }} />
+    <div className="skeleton" style={{ aspectRatio: "1/1" }} />
     <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
       <div className="skeleton" style={{ height: "18px", width: "70%", borderRadius: "6px" }} />
       <div className="skeleton" style={{ height: "12px", width: "90%", borderRadius: "6px" }} />
