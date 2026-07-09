@@ -1,10 +1,8 @@
 import { useContext, useState } from "react";
-import { createPortal } from "react-dom";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { WishlistContext } from "../context/WishlistContext";
 import { useNavigate } from "react-router-dom";
-import QuickViewModal from "./QuickViewModal";
 
 const CATEGORY_COLORS = {
   "Shirts": "badge-blue",
@@ -21,11 +19,9 @@ export default function ProductCard({ product }) {
   const [added, setAdded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
-
-  const handleChooseOptions = (e) => {
+  const handleQuickView = (e) => {
     e.stopPropagation();
-    setShowModal(true);
+    navigate(`/product/${product._id}`);
   };
 
   const isOutOfStock = product.quantity <= 0;
@@ -168,7 +164,7 @@ export default function ProductCard({ product }) {
             </h4>
 
             <button
-              onClick={handleChooseOptions}
+              onClick={handleQuickView}
               disabled={isOutOfStock}
               style={{
                 width: "100%",
@@ -193,11 +189,6 @@ export default function ProductCard({ product }) {
           </div>
         </div>
       </div>
-
-      {showModal && createPortal(
-        <QuickViewModal product={product} onClose={() => setShowModal(false)} />,
-        document.body
-      )}
     </>
   );
 }
