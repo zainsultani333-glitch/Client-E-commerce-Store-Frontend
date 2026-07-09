@@ -110,46 +110,47 @@ export default function ProductCard({ product }) {
         <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", flex: 1 }}>
           <h3 style={{
             fontSize: "17px", fontWeight: "600", fontFamily: "'Playfair Display', serif",
-            color: "var(--text-primary)", margin: "0 0 4px 0",
+            color: "var(--text-primary)", margin: "0 0 8px 0",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
           }}>
-            {product.name}
+            {product.name} <span style={{ fontSize: "13px", color: "var(--text-muted)", fontFamily: "'Montserrat', sans-serif", fontWeight: "400" }}>({product.category || 'Apparel'})</span>
           </h3>
 
+          {/* Description (max 2 lines) */}
           <p style={{
-            fontSize: "13px", color: "var(--text-muted)", margin: "0 0 10px 0"
+            fontSize: "13px",
+            color: "var(--text-secondary)",
+            margin: "0 0 10px 0",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            lineHeight: "1.4",
+            height: "2.8em"
           }}>
-            {product.category || 'Apparel'}
+            {product.description || "No description available for this product."}
           </p>
 
-          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+          {/* Reviews */}
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
               <svg width="12" height="12" fill="#1a3622" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" /></svg>
               <span style={{ fontWeight: "600", color: "#111" }}>{averageRating > 0 ? averageRating : '0.0'}</span>
               <span style={{ color: "#d1d1d1" }}>|</span>
               <span>{product.reviews?.length || 0} reviews</span>
             </div>
-            {product.colors && product.colors.length > 0 && (
+            {product.colors && product.colors.length > 0 ? (
               <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
                 <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: product.colors[0], border: "1px solid rgba(0,0,0,0.1)" }} />
                 <span>{product.colors[0]}</span>
               </div>
-            )}
-            {(!product.colors || product.colors.length === 0) && (
+            ) : (
               <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
                 <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#e0d2c3", border: "1px solid rgba(0,0,0,0.1)" }} />
                 <span>Beige</span>
               </div>
             )}
-          </div>
-
-          {/* Sizes */}
-          <div style={{ display: "flex", gap: "8px", marginBottom: "12px", flexWrap: "wrap" }}>
-            {(product.sizes && product.sizes.length > 0 ? product.sizes : ['S', 'M', 'L', 'XL']).slice(0,4).map(size => (
-              <div key={size} style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: "4px", padding: "4px 10px", fontSize: "11px", fontWeight: "500", color: "var(--text-primary)", background: "#fff" }}>
-                {size}
-              </div>
-            ))}
           </div>
 
           {/* Bottom Row */}

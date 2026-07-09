@@ -31,6 +31,7 @@ export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [reviewName, setReviewName] = useState("");
@@ -179,10 +180,10 @@ export default function ProductDetail() {
       </div>
 
       <div className="container" style={{ padding: "24px" }}>
-        <div className="product-detail-grid">
+        <div className="product-detail-grid" style={{ alignItems: "start" }}>
 
           {/* ─── LEFT: IMAGE GALLERY ─── */}
-          <div className="left-column-wrapper">
+          <div className="left-column-wrapper" style={{ alignSelf: "start" }}>
             <div className="left-column">
             <div
               className="image-container"
@@ -595,12 +596,58 @@ export default function ProductDetail() {
             {/* Description */}
             {product.description && (
               <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: "20px", marginTop: "8px" }}>
-                <h3 style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" }}>
+                <div style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px", fontFamily: "'Montserrat', sans-serif" }}>
                   Product Description
-                </h3>
-                <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6", whiteSpace: "pre-line", margin: 0 }}>
+                </div>
+                <p style={isDescExpanded ? {
+                  fontSize: "14px",
+                  color: "var(--text-secondary)",
+                  lineHeight: "1.6",
+                  whiteSpace: "pre-line",
+                  margin: 0,
+                  fontFamily: "'Montserrat', sans-serif"
+                } : {
+                  fontSize: "14px",
+                  color: "var(--text-secondary)",
+                  lineHeight: "1.6",
+                  whiteSpace: "pre-line",
+                  margin: 0,
+                  fontFamily: "'Montserrat', sans-serif",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}>
                   {product.description}
                 </p>
+                {product.description.length > 120 && (
+                  <div style={{ display: "flex", justifyContent: "center", marginTop: "12px" }}>
+                    <button
+                      onClick={() => setIsDescExpanded(!isDescExpanded)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "var(--primary)",
+                        fontSize: "12px",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                        textTransform: "uppercase",
+                        letterSpacing: "1.5px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        padding: "6px 12px",
+                        transition: "all 0.2s"
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.color = "var(--primary-light)"}
+                      onMouseLeave={e => e.currentTarget.style.color = "var(--primary)"}
+                    >
+                      {isDescExpanded ? "Show Less" : "More Info"}
+                      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ transform: isDescExpanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -804,10 +851,11 @@ export default function ProductDetail() {
           display: grid;
           grid-template-columns: 1fr;
           gap: 32px;
-          align-items: stretch;
+          align-items: start !important;
         }
         .left-column-wrapper {
           position: relative;
+          align-self: start !important;
         }
         .left-column {
           display: flex;
@@ -825,18 +873,26 @@ export default function ProductDetail() {
         }
         @media (min-width: 900px) {
           .product-detail-grid {
-            grid-template-columns: 1.1fr 0.9fr;
+            grid-template-columns: 55% 45% !important;
             gap: 48px;
+            align-items: start !important;
+          }
+          .left-column-wrapper {
+            position: sticky;
+            top: 96px;
+            align-self: start !important;
+            width: 100%;
           }
           .left-column {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
           }
           .image-container {
-            aspect-ratio: auto;
-            flex: 1;
-            min-height: 0;
+            aspect-ratio: 4/5 !important;
+            width: 100% !important;
+            max-height: 550px !important;
           }
         }
         
