@@ -591,6 +591,18 @@ export default function ProductDetail() {
                 <div style={{ fontSize: "11px", lineHeight: "1.3", color: "var(--text-secondary)" }}><span style={{ fontWeight: "700", display: "block", color: "var(--text-primary)", marginBottom: "2px" }}>Easy Returns</span>7-day return policy</div>
               </div>
             </div>
+
+            {/* Description */}
+            {product.description && (
+              <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: "20px", marginTop: "8px" }}>
+                <h3 style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" }}>
+                  Product Description
+                </h3>
+                <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6", whiteSpace: "pre-line", margin: 0 }}>
+                  {product.description}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
